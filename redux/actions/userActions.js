@@ -12,7 +12,7 @@ export const loginAction = ({ ...values}) => {
         ...values,
         email:values.username
       })
-      dispatch({ type: "LOGIN", payload: res.data });
+      dispatch({ type: "LOGIN", payload: {...res.data} });
    
       Cookies.set("token", res.headers["x-token-access"]);
 
@@ -54,6 +54,78 @@ export const registerAction = ({ ...values }) => {
         'Welcome aboard!',
         'success'
         )
+
+    } catch (error) {
+      dispatch({ type: "ERROR", payload: error.response.data.message || "Network Error" });
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: (error.response.data.message || "Network Error"),
+    })
+
+    } finally {
+      dispatch({ type: "DONE" });
+    }
+  };
+};
+
+export const editProfile = ({ ...values }) => {
+
+  return async (dispatch) => {
+    try {
+      dispatch({ type: "LOADING" });
+      let token = Cookies.get("token")
+  
+      let res2 = await axios.patch(`${API_URL}/profile/updateprofile`, {
+          ...values
+      },
+      {headers: {
+          authorization: `Bearer ${token}`,
+      }},)
+
+      dispatch({ type: "LOGIN", payload: res2.data });
+
+      Swal.fire(
+      'Profile successfully changed!',
+      'Yay!',
+      'success'
+      )
+
+    } catch (error) {
+      dispatch({ type: "ERROR", payload: error.response.data.message || "Network Error" });
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: (error.response.data.message || "Network Error"),
+    })
+
+    } finally {
+      dispatch({ type: "DONE" });
+    }
+  };
+};
+
+export const editProfilePhoto = ({ ...values }) => {
+
+  return async (dispatch) => {
+    try {
+      dispatch({ type: "LOADING" });
+      let token = Cookies.get("token")
+  
+      let res2 = await axios.patch(`${API_URL}/profile/updateprofile`, {
+          ...values
+      },
+      {headers: {
+          authorization: `Bearer ${token}`,
+      }},)
+
+      dispatch({ type: "LOGIN", payload: res2.data });
+
+      Swal.fire(
+      'Profile successfully changed!',
+      'Yay!',
+      'success'
+      )
 
     } catch (error) {
       dispatch({ type: "ERROR", payload: error.response.data.message || "Network Error" });

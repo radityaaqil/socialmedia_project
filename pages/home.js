@@ -5,13 +5,15 @@ import useUser from '../hooks/useUser'
 
 const Home = () => {
 
+    const { username } = useUser()
+
 
     return(
-            <div className='flex'>
-                <LeftNavBar/>
-                <Feed/>
-                <RightNavBar/>
-            </div>
+        <div className='flex'>
+            <LeftNavBar username = {username}/>
+            <Feed/>
+            <RightNavBar/>
+        </div>
     )
 }
 

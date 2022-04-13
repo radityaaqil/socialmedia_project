@@ -3,6 +3,10 @@ const INITIAL_STATE = {
     isLogin: false,
     username: "",
     error_mes: "",
+    email : "",
+    fullname : "",
+    bio : "",
+    profile_picture: "",
   };
   
   const userReducer = (state = INITIAL_STATE, action) => {

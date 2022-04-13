@@ -28,7 +28,7 @@ import { useState, useEffect } from 'react';
 import API_URL from '../helpers/apiurl';
 import axios from 'axios'
 
-const LeftNavBar = () => {
+const LeftNavBar = ({username}) => {
     
     const { isOpen, onOpen, onClose} = useDisclosure()
 
@@ -116,7 +116,7 @@ const LeftNavBar = () => {
                         <a href=""><Avatar size='md' bg='pink.500'/></a>
                         <div className='flex flex-col text-base'>
                             <div className='font-bold'>Barbara Palvin</div>
-                            <div className='text-sm'>@realbarbarapalvin</div>
+                            <div className='text-sm'>@{username}</div>
                         </div>
                         <button className='text-base p-2'><FiMoreHorizontal/></button>
                     </div> 

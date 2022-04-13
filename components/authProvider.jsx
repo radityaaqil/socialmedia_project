@@ -33,16 +33,11 @@ const AuthProvider = ({ children }) => {
   }, []);
   
   if(loading){
-    return <div className="bg-black min-h-screen">
-              <Heading>
-                <div className='grid justify-center text-center text-9xl pt-10'>
-                  <div><span className='bg-clip-text text-transparent bg-gradient-to-r from-pinktertiary to-violet-500'>POST.</span></div>
-                  <div><span className='bg-clip-text text-transparent bg-gradient-to-r from-violet-500 to-yellow-500'>SHARE.</span></div>
-                  <div><span className='bg-clip-text text-transparent bg-gradient-to-r from-yellow-500 to-pinktertiary'>INTERACT.</span></div>
-                </div>
-              </Heading>
-           </div>
-    
+    return  <div className="grid justify-center pt-44 bg-black min-h-screen">
+              <div className="text-white flex flex-col items-center space-y-6">
+                <div className="text-5xl font-bold pt-6 text-pinktertiary">Loading . . .</div>
+              </div>
+            </div>
   }
 
   return children;

@@ -19,6 +19,8 @@ const Register = ({ registerAction }) => {
 
     const [show1, setShow1] = useState(false)
     const handleClick1 = () => setShow1(!show1)
+
+    const [disableButton, setdisableButton] = useState(false)
     
     const formik = useFormik({
         initialValues : {
@@ -39,11 +41,14 @@ const Register = ({ registerAction }) => {
             
             try {     
                 registerAction(values)
+                setdisableButton(true)
         
             } catch (error) {
                 console.log(error)
             
-            }     
+            } finally {
+                setdisableButton(false)
+            }
         }
     })
 
@@ -141,7 +146,7 @@ const Register = ({ registerAction }) => {
                             <div><a href="" className="text-pinktertiary">I agree to the terms and conditions</a></div>
                         </div>
 
-                        <div className='py-2 flex justify-center bg-pinktertiary rounded-full focus:outline-none hover:cursor-pointer hover:text-black duration-700 text-white '><button type="submit" className='text-2xl font-bold'>Sign Up</button>
+                        <div className='py-2 flex justify-center bg-pinktertiary rounded-full focus:outline-none hover:cursor-pointer hover:text-black duration-700 text-white disabled:bg-black '><button type="submit" className='text-2xl font-bold'>Sign Up</button>
                         </div>
 
                         <div className="text-pinktertiary font-thin pt-5">Already have an account? <Link href="/login"><span className="hover:underline-offset-2 hover:underline hover:cursor-pointer">Sign Up</span></Link></div>
