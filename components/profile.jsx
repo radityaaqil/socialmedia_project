@@ -1,6 +1,3 @@
-import Image from "next/image";
-import CoverPhoto from "../photos/Barbara_CoverPhoto.jpg";
-import ProfilePhoto from "../photos/Barbara_ProfilePicture.jpg";
 import { IoLocationOutline } from "react-icons/io5";
 import { IoClose } from "react-icons/io5";
 import { IoAddCircleOutline } from "react-icons/io5";
@@ -22,16 +19,24 @@ import API_URL from "../helpers/apiurl";
 import Swal from 'sweetalert2';
 import { editProfile } from "../redux/actions/userActions";
 import { connect } from "react-redux";
+import { useRouter } from "next/router";
+import * as Yup from "yup";
 
-const Profile = ({editProfile, username, fullname}) => {
+const Profile = ({editProfile, username, fullname, bio, profile_picture, cover_picture, location}) => {
     
+    const router = useRouter()
+
     const { isOpen, onOpen, onClose } = useDisclosure()
 
-    const [input, setinput] = useState({
-        image: "",
-      });
+    const [selectedCoverImage, setselectedCoverImage] = useState({
+        file:[],
+        filePreview:null,
+    });
 
-    const [fileupload, setupload] = useState(null);
+    const [selectedImage, setselectedImage] = useState({
+        file:[],
+        filePreview:null,
+    });
 
     const [scrollBehavior, setScrollBehavior] = React.useState('inside')
     
@@ -40,42 +45,89 @@ const Profile = ({editProfile, username, fullname}) => {
     const formik = useFormik({
         initialValues : {
             fullname : "",
+            username : "",
             bio : "",
+            location : "",
         },
+
+        validationSchema : Yup.object({
+            fullname : Yup.string().min(8, "Name can't be blank").required("Name can't be blank"),
+            username : Yup.string().min(8, "Minimum 8 characters").required("Required")
+        }),
+
         onSubmit : async (values) => {
             try {
                 editProfile(values)
                 onClose()
-
+                
             } catch (error) {
                 console.log(error)
+                router.push("/userprofile")
             }     
         }
 
     })
-
+    
     const ToggleClass = () => {
       setActive(!isActive);
     };
 
-    let formData = new FormData();
-
     const onFileChange = (e) => {
         console.log(e.target.files[0])
         if(e.target && e.target.files[0]){
-            formData.append("profile_picture", e.target.files[0]);
+            setselectedImage({...selectedImage, file:e.target.files[0], filePreview:URL.createObjectURL(e.target.files[0])}) 
+        }
+    }
+
+    const onFileChangeCover = (e) => {
+        console.log(e.target.files[0])
+        if(e.target && e.target.files[0]){
+            setselectedCoverImage({...selectedCoverImage, file:e.target.files[0], filePreview:URL.createObjectURL(e.target.files[0])})
+        }
+    }
+
+    const deletePhoto = async () => {
+        try {
+            let token = Cookies.get("token");
+    
+            await axios.patch(`${API_URL}/photos/deletecoverphotos`, null ,{
+                headers: {
+                    authorization: `Bearer ${token}`,
+                },
+            });
+        } catch (error) {
+            console.log(error);
         }
     }
 
     const submitPhoto = async () => {
         try {
             let token = Cookies.get("token");
-            await axios.patch(`${API_URL}/photos`, formData, {
-                headers: {
-                  authorization: `Bearer ${token}`,
-                },
-            })
+            let formData = new FormData();
+            formData.append("profile_picture", selectedImage.file);
             
+            let formDataCover = new FormData();
+            formDataCover.append("cover_picture", selectedCoverImage.file);
+           
+            await axios.all([
+                axios.patch(`${API_URL}/photos`, formData, {
+                    headers: {
+                      authorization: `Bearer ${token}`,
+                    },
+                }),
+                axios.patch(`${API_URL}/photos/coverphotos`, formDataCover, {
+                    headers: {
+                      authorization: `Bearer ${token}`,
+                    },
+                }) 
+            ])
+            
+            await Swal.fire(
+            'Successfully logged in!',
+            'Welcome back!',
+            'success'
+            )
+
         } catch (error) {
             console.log(error)
         }
@@ -87,27 +139,31 @@ const Profile = ({editProfile, username, fullname}) => {
             
             {/* Header */}
             <div className='bg-black bg-opacity-70 backdrop-blur-sm fixed top-0 pl-6 pt-4 pb-2 w-5/12 z-10'>
-                <div className="text-xl font-bold">Barbara Palvin</div>
+                {fullname ? <div className="text-xl font-bold">{fullname}</div> : <div className="text-xl font-bold">Your Fullname</div>}
                 <div className="text-sm">6969 Twaats</div>
             </div>
 
             {/* User Profile */}
 
-            <div className="h-52 mt-20 relative">
-                <Image objectFit="cover" layout="fill" src={CoverPhoto} alt="Barbara Palvin"/>
-                <div className="relative -bottom-32 left-6 ring-4 w-32 h-32 rounded-full ring-black">
-                    <Image src={ProfilePhoto} className='rounded-full' layout='fill' objectFit="cover"/>
+            <div className="mt-20 relative">
+             
+                {cover_picture ? <img src={`${API_URL}${cover_picture}`} alt="" className="object-cover h-52 w-full"/> : <img src={`${API_URL}/photos/defaultcoverimage.png`} alt="" className="object-cover h-52 w-full"/>}
+                <div className="absolute -bottom-14 left-6 ring-4 w-32 h-32 rounded-full ring-black">
+                
+                    {profile_picture ? <img src={`${API_URL}${profile_picture}`} alt="" className="ring-4 w-32 h-32 rounded-full ring-black object-cover"/> : <img src={`${API_URL}/photos/defaultcoverimage.png`} alt="" className="ring-4 w-32 h-32 rounded-full ring-black object-cover"/>}
+                    
                 </div>
+
                 <button onClick={onOpen} className="absolute -bottom-14 right-5 border-2 py-2 px-3 rounded-full hover:bg-darksecondary duration-700">Edit Profile</button>
             </div>
 
-            <div className="mt-16 pl-6">
+            <div className="mt-20 pl-6">
                 <div className="text-xl font-bold">{fullname}</div>
                 <div>@{username}</div>
-                <div className="pt-3">just working hard. living my dream. and hoping that u like the results! instagram: 
-                @realbarbarapalvin</div>
+                {bio ? <div className="pt-3">{bio}</div> : <div className="pt-3">Your Bio</div>}
                 <div className="flex gap-10 pt-3">
-                    <div className="flex items-center gap-2"><IoLocationOutline/><span>All over your heart</span></div>
+                    {location ? <div className="flex items-center gap-2"><IoLocationOutline/><span>{location}</span></div> : null}
+                    
                     <div className="flex items-center gap-2"><FaCalendarAlt/><span>Joined March 2010</span></div>
                 </div>
                 <div className="flex gap-10 pt-3">
@@ -141,18 +197,42 @@ const Profile = ({editProfile, username, fullname}) => {
                                 <button type="submit" className="w-1/4 grid justify-center"><div className="bg-pinktertiary w-fit py-1 px-3 hover:bg-pinksecondary duration-700 rounded-full">Save</div></button>    
                             </ModalHeader>
                         
-                        <ModalBody className='flex flex-col gap-4 bg-darkprimary'>
-                            <div>
-                                <div className="h-48 relative w-full">
-                                    <Image layout="fill" objectFit="cover" src={CoverPhoto} alt="Barbara Palvin"/>
-                                    <div className="relative -bottom-28 left-6 ring-4 rounded-full ring-darkprimary w-28 h-28">
-                                        <Image src={ProfilePhoto} className='rounded-full' layout='fill' objectFit="cover"/>
+                        <ModalBody className='flex flex-col gap-2 bg-darkprimary'>
+                            <div className="pb-4">
+                                <div className="relative">
+
+                                    {cover_picture && selectedCoverImage.filePreview ? <img src={selectedCoverImage.filePreview} alt="" className="object-cover w-full h-48"/> : null}
+
+                                    {!cover_picture && selectedCoverImage.filePreview ? <img src={selectedCoverImage.filePreview} alt="" className="object-cover w-full h-48"/> : null}
+
+                                    {cover_picture && !selectedCoverImage.filePreview ? <img src={`${API_URL}${cover_picture}`} alt="" className="object-cover w-full h-48"/> : null}
+
+                                    {!cover_picture && !selectedCoverImage.filePreview ? <img src={`${API_URL}/photos/defaultcoverimage.png`} alt="" className="object-cover w-full h-48"/> : null}
+
+                                    {/* {cover_picture ? <img src={`${API_URL}${cover_picture}`} alt="" className="object-cover w-full h-48"/> : <img src={`${API_URL}/photos/defaultcoverimage.png`} alt="" className="object-cover w-full h-48"/>}
+
+                                    {selectedCoverImage && (<img src={URL.createObjectURL(selectedCoverImage)} alt="" className="object-cover w-full h-48 z-99"/>)} */}
+
+                                    <div className="absolute -bottom-8 left-6">
+{/* 
+                                        {selectedImage.filePreview && <img src={selectedImage.filePreview} alt="" className="object-cover w-28 h-28 ring-4 rounded-full ring-darkprimary"/>} */}
+
+                                        {profile_picture && selectedImage.filePreview ? <img src={selectedImage.filePreview} alt="" className="object-cover w-28 h-28 ring-4 rounded-full ring-darkprimary"/> : null}
+
+                                        {!profile_picture && selectedImage.filePreview ? <img src={selectedImage.filePreview} alt="" className="object-cover w-28 h-28 ring-4 rounded-full ring-darkprimary"/> : null}
+
+                                        {profile_picture && !selectedImage.filePreview ? <img src={`${API_URL}${profile_picture}`} alt="" className="object-cover w-28 h-28 ring-4 rounded-full ring-darkprimary"/> : null}
+
+                                        {!profile_picture && !selectedImage.filePreview ? <img src={`${API_URL}/photos/defaultcoverimage.png`} alt="" className="object-cover w-28 h-28 ring-4 rounded-full ring-darkprimary"/> : null}
+                                        
                                     </div>
-                                    <input className='hidden' type="file" id='coverPic'/>
+                                    <input className='hidden' type="file" id='coverPic' onChange={onFileChangeCover}/>
                                     <input className='hidden' type="file" id='profilePic' onChange={onFileChange}/>
-                                    <button type="button" onClick={submitPhoto} className="absolute left-64 top-20 text-3xl bg-darkprimary hover:bg-darksecondary duration-700 rounded-full p-2 bg-opacity-60 text-white"><IoClose/></button>
+                                    <button type="button" onClick={deletePhoto} className="absolute left-64 top-20 text-3xl bg-darkprimary hover:bg-darksecondary duration-700 rounded-full p-2 bg-opacity-60 text-white"><IoClose/></button>
                                     <label for="coverPic" type="button" className="absolute left-40 top-20 text-3xl bg-darkprimary hover:bg-darksecondary hover:cursor-pointer duration-700 rounded-full p-2 bg-opacity-60 text-white"><IoAddCircleOutline/></label>
                                     <label for="profilePic" type="button" className="absolute left-24 top-48 text-3xl bg-darkprimary hover:bg-darksecondary hover:cursor-pointer duration-700 rounded-full p-1 bg-opacity-60 text-white"><IoAddCircleOutline/></label>
+
+                                    <button type="button" className="text-white absolute -bottom-10 right-4 border-2 py-1 px-2 rounded-full hover:bg-darksecondary duration-700" onClick={submitPhoto}>Confirm photos</button>
                                 </div>
                             </div>
                             <div className="text-white mt-12 p-2 w-full border-2 border-darksecondary rounded-xl">
@@ -162,6 +242,18 @@ const Profile = ({editProfile, username, fullname}) => {
                                     onBlur={formik.handleBlur} 
                                     value={formik.values.fullname} />
                             </div>
+
+                            {formik.touched.fullname && formik.errors.fullname ? <p className="text-sm ml-3 text-pinktertiary font-bold">{formik.errors.fullname}</p> : null}
+
+                            <div className="text-white w-full p-2 border-2 border-darksecondary rounded-xl">
+                                <div className="text-base">Username</div>
+                                <input className="w-full text-white focus:outline-none bg-darkprimary text-xl font-bold tracking-wider" type="text" name="username"
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur} 
+                                    value={formik.values.username}/>
+                            </div>
+
+                            {formik.touched.username && formik.errors.username ? <p className="text-sm ml-3 text-pinktertiary font-bold">{formik.errors.username}</p> : null}
                             
                             <div className="text-white w-full p-2 border-2 border-darksecondary rounded-xl">
                                 <div className="text-base">Bio</div>
@@ -172,7 +264,10 @@ const Profile = ({editProfile, username, fullname}) => {
                             </div>
                             <div className="text-white w-full p-2 mb-4 border-2 border-darksecondary rounded-xl">
                                 <div className="text-base">Location</div>
-                                <input className="w-full text-white focus:outline-none bg-darkprimary text-xl font-bold tracking-wider" type="text"/>
+                                <input className="w-full text-white focus:outline-none bg-darkprimary text-xl font-bold tracking-wider" type="text" name="location"
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur} 
+                                    value={formik.values.location}/>
                             </div>
                         
                         </ModalBody>  

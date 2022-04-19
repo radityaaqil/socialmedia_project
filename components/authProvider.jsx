@@ -3,8 +3,6 @@ import Cookies from "js-cookie";
 import { useDispatch } from "react-redux";
 import axios from "axios";
 import API_URL from "../helpers/apiurl";
-import { Spinner } from '@chakra-ui/react'
-import { Heading } from '@chakra-ui/react';
 
 const AuthProvider = ({ children }) => {
 
@@ -23,12 +21,11 @@ const AuthProvider = ({ children }) => {
         });
         dispatch({ type: "LOGIN", payload: result.data });
       }
-
       console.log(token)
     } catch (error) {
       console.log("error");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }, []);
   

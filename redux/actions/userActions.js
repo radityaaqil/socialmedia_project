@@ -1,7 +1,7 @@
 import axios from "axios";
 import API_URL from "../../helpers/apiurl";
 import Swal from 'sweetalert2';
-import Cookies from 'js-cookie'
+import Cookies from 'js-cookie';
 
 export const loginAction = ({ ...values}) => {
   
@@ -16,15 +16,15 @@ export const loginAction = ({ ...values}) => {
    
       Cookies.set("token", res.headers["x-token-access"]);
 
-      Swal.fire(
-        'Successfully logged in!',
-        'Welcome back!',
-        'success'
-        )
+      await Swal.fire(
+      'Successfully logged in!',
+      'Welcome back!',
+      'success'
+      )
     
     } catch (error) {
       dispatch({ type: "ERROR", payload: error.response.data.message || "Network Error" });
-      Swal.fire({
+      await Swal.fire({
         icon: 'error',
         title: 'Oops...',
         text: (error.response.data.message || "Network Error"),
@@ -97,7 +97,7 @@ export const editProfile = ({ ...values }) => {
         icon: 'error',
         title: 'Oops...',
         text: (error.response.data.message || "Network Error"),
-    })
+      })
 
     } finally {
       dispatch({ type: "DONE" });
@@ -133,7 +133,32 @@ export const editProfilePhoto = ({ ...values }) => {
         icon: 'error',
         title: 'Oops...',
         text: (error.response.data.message || "Network Error"),
-    })
+      })
+
+    } finally {
+      dispatch({ type: "DONE" });
+    }
+  };
+};
+
+export const postCaption = ({ ...values }) => {
+
+  return async (dispatch) => {
+    try {
+      dispatch({ type: "LOADING" });
+      let token = Cookies.get("token")
+  
+      let res2 = await axios.post(`${API_URL}/post/postcaption`, {
+          ...values
+      },
+      {headers: {
+          authorization: `Bearer ${token}`,
+      }},)
+
+      dispatch({ type: "POST", payload: {...res2.data} });
+
+    } catch (error) {
+      dispatch({ type: "ERROR", payload: error.response.data.message || "Network Error" });
 
     } finally {
       dispatch({ type: "DONE" });

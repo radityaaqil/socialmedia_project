@@ -27,41 +27,42 @@ import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import API_URL from '../helpers/apiurl';
 import axios from 'axios'
+import { useFormik } from "formik";
+import Swal from 'sweetalert2';
 
-const LeftNavBar = ({username}) => {
+const LeftNavBar = ({username, fullname, profile_picture, postEverywhere}) => {
     
     const { isOpen, onOpen, onClose} = useDisclosure()
 
-    // const [input, setInput] = useState({
-    //     twaat:"",
-    //     image:""
-    // })
+    const [input, setInput] = useState({
+        caption:"",
+    })
 
-    // const inputTwaatHandler = (e) => {
-    //     setInput({...input, [e.target.name]:e.target.value})
-    // }  
+    const inputTwaatHandler = (e) => {
+        setInput({...input, [e.target.name]:e.target.value})
+    }  
 
-    // const submitTwaatHandler = () => {
-        
-        
-    //     axios.post(`${API_URL}/data`, 
-    //     input
-    //     )
-    //     .then(() => {
-    //     fetchData()
-    //     setInput(
-    //         {twaat:"",
-    //         image:""}
-    //     );
-    //     })
-    //     .catch((error) => {
-    //     console.log(error);
-    //     });
+    const submitPost = async (e) => {
+        e.preventDefault()
+        try {
+            postEverywhere(input)
 
-    //     onClose()
+            onClose()
 
-    //     window.location.reload()
-    // }
+            await Swal.fire(
+            'Post sent!',
+            '',
+            'success'
+            )
+            
+        } catch (error) {
+            await Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: (error.response.data.message || "Network Error"),
+            })
+        }
+    }
 
 
     // const [data, setState] = useState([]);
@@ -78,6 +79,31 @@ const LeftNavBar = ({username}) => {
     // useEffect(() => {
     //     fetchData();
     // }, []);
+
+    // const formik = useFormik({
+    //     initialValues : {
+    //         caption : ""
+    //     },
+
+    //     validationSchema : Yup.object({
+    //         caption : Yup.string().min(1, "Post can't be blank").required("Post can't be blank"),
+    //     }),
+
+    //     onSubmit : async (values) => {
+    //         try {
+    //             if(isVerified){
+    //                 postEverywhere(values)
+    //                 fetchData()
+                    
+    //             }else{
+    //                 alert('error')
+    //             }
+                
+    //         } catch (error) {
+    //             console.log(error)
+    //         }     
+    //     }
+    // })
 
     return(
         <div className="bg-black min-h-screen w-3/12 border-r-2 border-darksecondary">
@@ -113,9 +139,12 @@ const LeftNavBar = ({username}) => {
 
                 <div className='pt-10'>
                     <div className='flex items-center space-x-3 hover:bg-darksecondary rounded-full duration-700 py-2 px-3 cursor-pointer'>
-                        <a href=""><Avatar size='md' bg='pink.500'/></a>
+                        <a href="">
+                            {/* <Avatar size='md' bg='pink.500'/> */}
+                            {profile_picture ? <img src={`${API_URL}${profile_picture}`} alt="" className="object-cover w-14 h-14 rounded-full" /> : <img src={`${API_URL}/photos/defaultcoverimage.png`} alt="" className="object-cover w-14 h-14 rounded-full" />}
+                        </a>
                         <div className='flex flex-col text-base'>
-                            <div className='font-bold'>Barbara Palvin</div>
+                            <div className='font-bold'>{fullname}</div>
                             <div className='text-sm'>@{username}</div>
                         </div>
                         <button className='text-base p-2'><FiMoreHorizontal/></button>
@@ -126,24 +155,26 @@ const LeftNavBar = ({username}) => {
 
             <Modal size="sm" isOpen={isOpen} onClose={onClose} roundedTop='3xl'>
                 <ModalOverlay />
-                <ModalContent>
-                    <ModalHeader bg='darkprimary' display='flex' justifyContent='space-between'>
-                        <button className="bg-darkprimary rounded-full py-2 px-3 text-base text-white hover:bg-darksecondary duration-700" onClick={onClose}>
-                        Cancel
-                        </button>
-                        <button className='bg-pinktertiary text-white rounded-full py-2 px-3 text-base hover:bg-pinksecondary duration-700'>Twaat</button>
-                    </ModalHeader>
-                   
-                <ModalBody className='flex gap-4 bg-darkprimary'>
-                    <Avatar size='sm' bg='pink.500'/>
-                    <textarea name="twaat" className='pt-1 focus:outline-none bg-darkprimary text-white resize-none'  cols="36" rows="10" placeholder="What's happening..."></textarea>
-                </ModalBody>
-    
-                <ModalFooter className='bg-darkprimary'>
-                    <label className='bg-pinktertiary text-white rounded-full py-2 px-3 text-base hover:bg-pinksecondary duration-700 cursor-pointer' for="inputPic">Upload</label>
-                    <input className='hidden' type="file" id='inputPic' />
-                </ModalFooter>
-                </ModalContent>
+                    <form onSubmit={submitPost}>
+                        <ModalContent>
+                            <ModalHeader bg='darkprimary' display='flex' justifyContent='space-between'>
+                                <button className="bg-darkprimary rounded-full py-2 px-3 text-base text-white hover:bg-darksecondary duration-700" onClick={onClose} type="button">
+                                Cancel
+                                </button>
+                                <button className='bg-pinktertiary text-white rounded-full py-2 px-3 text-base hover:bg-pinksecondary duration-700' type="submit">Twaat</button>
+                            </ModalHeader>
+                        
+                        <ModalBody className='flex gap-4 bg-darkprimary'>
+                            <Avatar size='sm' bg='pink.500'/>
+                            <textarea name="caption" value={input.caption} onChange={inputTwaatHandler} className='pt-1 focus:outline-none bg-darkprimary text-white resize-none'  cols="36" rows="10" placeholder="What's happening..."></textarea>
+                        </ModalBody>
+            
+                        <ModalFooter className='bg-darkprimary'>
+                            <label className='bg-pinktertiary text-white rounded-full py-2 px-3 text-base hover:bg-pinksecondary duration-700 cursor-pointer' for="inputPic">Upload</label>
+                            <input className='hidden' type="file" id='inputPic' />
+                        </ModalFooter>
+                        </ModalContent>
+                    </form>
             </Modal>
         </div>
     )

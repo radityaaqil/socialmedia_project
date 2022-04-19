@@ -1,13 +1,17 @@
 const INITIAL_STATE = {
     id: 0,
     isLogin: false,
+    isVerified:0,
     username: "",
     error_mes: "",
     email : "",
     fullname : "",
     bio : "",
     profile_picture: "",
-  };
+    cover_picture:"",
+    location:"",
+    caption:"",
+};
   
   const userReducer = (state = INITIAL_STATE, action) => {
     switch (action.type) {
