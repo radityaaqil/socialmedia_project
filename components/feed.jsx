@@ -125,6 +125,7 @@ const Feed = ({profile_picture, postEverywhere, data, fetchData, isVerified}) =>
                         <div className='flex space-x-2'>
                             <div>{val.fullname}</div>
                             <div>@{val.username}</div>
+                            <div>- {val.created_at}</div>
                         </div>
                         <div className='pt-2 text-lg'>{val.caption}</div>
                         <div className='pt-2 text-lg pr-6'></div>
@@ -157,7 +158,7 @@ const Feed = ({profile_picture, postEverywhere, data, fetchData, isVerified}) =>
                             <div className='pt-2 space-x-64'>
                                 <label htmlFor="pic" className='text-lg bg-pinktertiary rounded-full px-4 py-2 hover:bg-pinksecondary duration-700 cursor-pointer'>Upload</label>
                                 <input className='hidden' type="file" id='pic' name='image'/>
-                                <button className='text-lg bg-pinktertiary rounded-full px-4 py-2 hover:bg-pinksecondary duration-700' type='submit'>Twaat</button>
+                                <button className='text-lg bg-pinktertiary rounded-full px-4 py-2 hover:bg-pinksecondary duration-700' type='submit'>Post</button>
                             </div>
                         </div>
                 </form>

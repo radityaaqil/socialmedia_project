@@ -131,7 +131,7 @@ const LeftNavBar = ({username, fullname, profile_picture, postEverywhere}) => {
                     
                     
                 </div>
-                <button onClick={onOpen} className='text-center text-xl rounded-full bg-pinktertiary py-3 px-20 hover:bg-pinksecondary duration-700'>Twaat</button>
+                <button onClick={onOpen} className='text-center text-xl rounded-full bg-pinktertiary py-3 px-20 hover:bg-pinksecondary duration-700'>Post</button>
 
                 <button className='md:hidden absolute left-4 text-5xl'>
                     <IoAddCircleOutline/>

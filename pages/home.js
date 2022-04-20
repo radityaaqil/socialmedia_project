@@ -52,6 +52,7 @@ const Home = () => {
          
         }
       };
+      
     return(
         <div className='flex'>
             <LeftNavBar username = {username}

@@ -2,7 +2,6 @@ import { IoLocationOutline } from "react-icons/io5";
 import { IoClose } from "react-icons/io5";
 import { IoAddCircleOutline } from "react-icons/io5";
 import { FaCalendarAlt } from 'react-icons/fa';
-import React, {useState} from 'react';
 import {
     Modal,
     ModalOverlay,
@@ -21,8 +20,14 @@ import { editProfile } from "../redux/actions/userActions";
 import { connect } from "react-redux";
 import { useRouter } from "next/router";
 import * as Yup from "yup";
+import React, { useEffect, useState } from "react";
+import { FaRetweet } from 'react-icons/fa'
+import { BiComment } from "react-icons/bi";
+import { AiOutlineHeart } from "react-icons/ai";
+import { FiShare} from "react-icons/fi";
+import { FiMoreHorizontal} from "react-icons/fi";
 
-const Profile = ({editProfile, username, fullname, bio, profile_picture, cover_picture, location}) => {
+const Profile = ({editProfile, username, fullname, bio, profile_picture, cover_picture, location, posts, userPosts, counts}) => {
     
     const router = useRouter()
 
@@ -44,15 +49,15 @@ const Profile = ({editProfile, username, fullname, bio, profile_picture, cover_p
 
     const formik = useFormik({
         initialValues : {
-            fullname : "",
-            username : "",
-            bio : "",
-            location : "",
+            fullname : fullname,
+            username : username,
+            bio : bio,
+            location : location,
         },
 
         validationSchema : Yup.object({
             fullname : Yup.string().min(8, "Name can't be blank").required("Name can't be blank"),
-            username : Yup.string().min(8, "Minimum 8 characters").required("Required")
+            username : Yup.string().min(8, "Minimum 8 characters")
         }),
 
         onSubmit : async (values) => {
@@ -70,6 +75,7 @@ const Profile = ({editProfile, username, fullname, bio, profile_picture, cover_p
     
     const ToggleClass = () => {
       setActive(!isActive);
+      userPosts()
     };
 
     const onFileChange = (e) => {
@@ -121,9 +127,11 @@ const Profile = ({editProfile, username, fullname, bio, profile_picture, cover_p
                     },
                 }) 
             ])
+
+            onClose()
             
             await Swal.fire(
-            'Successfully logged in!',
+            'Successfully changed pictures!',
             'Welcome back!',
             'success'
             )
@@ -134,13 +142,40 @@ const Profile = ({editProfile, username, fullname, bio, profile_picture, cover_p
     }
 
     
+   
+
+    const renderData = () => {
+        return posts.map((val, index) => {
+            return(
+                <div key={index} className='border-b-2 border-darksecondary flex pb-4 pl-6 pt-4 hover:bg-darksecondary duration-700'>
+                    <div><a href="">{val.profile_picture ? <img src={`${API_URL}${val.profile_picture}`} alt="" className="object-cover w-14 h-14 rounded-full"/> : <img src={`${API_URL}/photos/defaultcoverimage.png`} alt="" className="object-cover w-14 h-14 rounded-full" />}</a></div>
+                    <div className='text-white flex flex-col pl-6'>
+                        <div className='flex space-x-2'>
+                            <div>{val.fullname}</div>
+                            <div>@{val.username}</div>
+                        </div>
+                        <div className='pt-2 text-lg'>{val.caption}</div>
+                        <div className='pt-2 text-lg pr-6'></div>
+                        <div className='pt-4 flex space-x-28'>
+                            <button className='text-lg hover:scale-150 duration-700'><BiComment/></button>
+                            <button className='text-lg hover:scale-150 duration-700'><FaRetweet/></button>
+                            <button className='text-lg hover:scale-150 duration-700'><AiOutlineHeart/></button>
+                            <button className='text-lg hover:scale-150 duration-700'><FiShare/></button>
+                        </div>
+                    </div>
+                    <button className='pb-20'><FiMoreHorizontal/></button>
+                </div>
+            )
+        })
+    }
+
     return (
         <div className="bg-black min-h-screen w-5/12 relative text-white">
             
             {/* Header */}
             <div className='bg-black bg-opacity-70 backdrop-blur-sm fixed top-0 pl-6 pt-4 pb-2 w-5/12 z-10'>
                 {fullname ? <div className="text-xl font-bold">{fullname}</div> : <div className="text-xl font-bold">Your Fullname</div>}
-                <div className="text-sm">6969 Twaats</div>
+                <div className="text-sm">{counts.posts} Posts</div>
             </div>
 
             {/* User Profile */}
@@ -174,7 +209,7 @@ const Profile = ({editProfile, username, fullname, bio, profile_picture, cover_p
 
             <div className="flex pt-8 text-lg border-b-2 border-darksecondary">
                 <div onClick={ToggleClass} className={isActive ? "w-1/4 bg-pinktertiary text-center cursor-pointer" : "w-1/4 text-center hover:bg-pinktertiary cursor-pointer"}>
-                    <button className="py-3">Tweet</button>
+                    <button className="py-3">Post</button>
                 </div>
                 <div className="w-1/4 hover:bg-pinktertiary text-center">
                     <button className="py-3">Comments</button>
@@ -184,6 +219,8 @@ const Profile = ({editProfile, username, fullname, bio, profile_picture, cover_p
                     <button className="py-3">Likes</button>
                 </div>
             </div>
+
+            {renderData()}
 
             {/* Edit Profile Modal */}
 

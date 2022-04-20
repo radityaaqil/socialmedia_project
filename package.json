@@ -17,7 +17,7 @@
     "axios": "^0.26.1",
     "cookie": "^0.4.2",
     "formik": "^2.2.9",
-    "framer-motion": "^6.2.8",
+    "framer-motion": "^6.3.0",
     "js-cookie": "^3.0.1",
     "jsonwebtoken": "^8.5.1",
     "next": "12.1.0",
