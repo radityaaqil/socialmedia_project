@@ -15,55 +15,21 @@ import Swal from 'sweetalert2';
 
 const Feed = ({profile_picture, postEverywhere, data, fetchData, isVerified}) => {
     
-    // const [input, setInput] = useState({
-    //     twaat:"",
-    // })
-
-    // const inputTwaatHandler = (e) => {
-    //     setInput({...input, [e.target.name]:e.target.value})
-    // }  
-
-    // const submitTwaatHandler = (e) => {
-    //     e.preventDefault()
-        
-    //     axios.post(`${API_URL}/data`, 
-    //     input
-    //     )
-    //     .then(() => {
-    //     fetchData()
-    //     setInput(
-    //         {twaat:"",
-    //     image:""}
-    //     );
-    //     })
-    //     .catch((error) => {
-    //     console.log(error);
-    //     });
-    // }
-        
-        
-    // const [data, setState] = useState([]);
-
-    // const fetchData = async () => {
-    //     try {
-    //     let token = Cookies.get("token")
-    //     let res = await axios.get(`${API_URL}/post/getpost`, {headers: {
-    //         authorization: `Bearer ${token}`,
-    //     }});
-    //     setState(res.data);
-    //     console.log(res.data)
-    //     } catch (error) {
-    //     console.log(error);
-    //     }
-    // };
-
-    // useEffect(() => {
-    //     fetchData();
-    // }, []);
-
     const [input, setInput] = useState({
         caption:"",
-    })
+    });
+
+    const [selectedImage, setselectedImage] = useState({
+        file:[],
+        filePreview:null,
+    });
+
+    const onFileChange = (e) => {
+        console.log(e.target.files[0])
+        if(e.target && e.target.files[0]){
+            setselectedImage({...selectedImage, file:e.target.files[0], filePreview:URL.createObjectURL(e.target.files[0])}) 
+        }
+    }
 
     const inputPostHandler = (e) => {
         setInput({...input, [e.target.name]:e.target.value})
@@ -71,8 +37,21 @@ const Feed = ({profile_picture, postEverywhere, data, fetchData, isVerified}) =>
 
     const submitPost = async (e) => {
         e.preventDefault()
+        
+        const formData = new FormData();
+        let insertData = {
+          caption: input.caption,
+        };
+        // formData.append("image", fileUpload);
+
+        for (let i = 0; i < selectedImage.file.length; i++) {
+            formData.append(`image[${i}]`, selectedImage.file[i])
+        }
+
+        formData.append("data", JSON.stringify(insertData));
+        
         try {
-            postEverywhere(input)
+            postEverywhere(formData)
 
             setInput({...input, caption:""})
 
@@ -115,6 +94,31 @@ const Feed = ({profile_picture, postEverywhere, data, fetchData, isVerified}) =>
     //         }     
     //     }
     // })
+    // let photos = data[i].photos
+
+    // const renderPhoto = () => {
+    //     return data.map((data1) => data1.photos.map((data2) => data2.image))
+    // }
+
+    // const renderImage = () => {
+    //     return 
+    // }
+    // useEffect(()=>{
+    //     a = renderPhoto()
+    //     console.log(a, "ini a")
+    //     // b={}
+    //     // for (let i = 0; i < a.length; i++) {
+    //     //     const element = a[i];
+    //     //     for (let j = 0; j < a[i].length; j++) {
+    //     //         const element = a[i][j];
+    //     //         b = {...b, element}
+    //     //     }
+    //     // }
+    //     console.log(a)
+    // },[])
+
+   
+    
 
     const renderData = () => {
         return data.map((val, index) => {
@@ -125,9 +129,19 @@ const Feed = ({profile_picture, postEverywhere, data, fetchData, isVerified}) =>
                         <div className='flex space-x-2'>
                             <div>{val.fullname}</div>
                             <div>@{val.username}</div>
-                            <div>- {val.created_at}</div>
+                            {/* <div>- {val.created_at}</div> */}
                         </div>
                         <div className='pt-2 text-lg'>{val.caption}</div>
+                        <div className='pt-2'>{val.photos ? 
+                        val.photos.map((val1, index1)=>{
+                            return (
+                                <div>
+                                    <div key={index1}><img src={`${API_URL}${val1.image}`}></img></div>
+                                    <p>{`${API_URL}${val1.image}`}</p>
+
+                                </div>
+                            )
+                        }) : null }</div>
                         <div className='pt-2 text-lg pr-6'></div>
                         <div className='pt-4 flex space-x-28'>
                             <button className='text-lg hover:scale-150 duration-700'><BiComment/></button>
@@ -157,7 +171,7 @@ const Feed = ({profile_picture, postEverywhere, data, fetchData, isVerified}) =>
                             
                             <div className='pt-2 space-x-64'>
                                 <label htmlFor="pic" className='text-lg bg-pinktertiary rounded-full px-4 py-2 hover:bg-pinksecondary duration-700 cursor-pointer'>Upload</label>
-                                <input className='hidden' type="file" id='pic' name='image'/>
+                                <input multiple className='hidden' type="file" id='pic' name='image' onClick={onFileChange}/>
                                 <button className='text-lg bg-pinktertiary rounded-full px-4 py-2 hover:bg-pinksecondary duration-700' type='submit'>Post</button>
                             </div>
                         </div>

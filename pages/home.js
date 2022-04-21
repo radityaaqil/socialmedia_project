@@ -37,9 +37,9 @@ const Home = () => {
          
           let token = Cookies.get("token")
       
-          await axios.post(`${API_URL}/post/postcaption`, {
-              ...values
-          },
+          await axios.post(`${API_URL}/post/postcaption`,
+              values
+          ,
           {headers: {
               authorization: `Bearer ${token}`,
           }},)
