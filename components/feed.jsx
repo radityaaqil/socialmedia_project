@@ -19,17 +19,20 @@ const Feed = ({profile_picture, postEverywhere, data, fetchData, isVerified}) =>
         caption:"",
     });
 
-    const [selectedImage, setselectedImage] = useState({
-        file:[],
-        filePreview:null,
-    });
+    //Pake preview
+    const [selectedImage, setselectedImage] = useState([]);
 
     const onFileChange = (e) => {
-        console.log(e.target.files[0])
-        if(e.target && e.target.files[0]){
-            setselectedImage({...selectedImage, file:e.target.files[0], filePreview:URL.createObjectURL(e.target.files[0])}) 
+        console.log(e.target.files, "ini target files")
+        console.log(e.target.files[0], "ini target files[0]")
+
+        if(e.target.files[0]){
+   
+            setselectedImage([...selectedImage,e.target.files[0]]) 
         }
+    
     }
+    console.log(selectedImage, "selected image")
 
     const inputPostHandler = (e) => {
         setInput({...input, [e.target.name]:e.target.value})
@@ -42,83 +45,35 @@ const Feed = ({profile_picture, postEverywhere, data, fetchData, isVerified}) =>
         let insertData = {
           caption: input.caption,
         };
-        // formData.append("image", fileUpload);
 
-        for (let i = 0; i < selectedImage.file.length; i++) {
-            formData.append(`image[${i}]`, selectedImage.file[i])
+        for (let i = 0; i < selectedImage.length; i++) {            
+            formData.append(`image`, selectedImage[i]);
         }
 
         formData.append("data", JSON.stringify(insertData));
-        
+ 
         try {
-            postEverywhere(formData)
+            await postEverywhere(formData)
 
             setInput({...input, caption:""})
 
-            await Swal.fire(
-            'Post sent!',
-            '',
-            'success'
-            )
+            // await Swal.fire(
+            // 'Post sent!',
+            // '',
+            // 'success'
+            // )
+
+            console.log(formData)
             
         } catch (error) {
-            await Swal.fire({
-            icon: 'error',
-            title: 'Oops...',
-            text: (error.response.data.message || "Network Error"),
-            })
+            // await Swal.fire({
+            // icon: 'error',
+            // title: 'Oops...',
+            // text: (error.response.data.message || "Network Error"),
+            // })
         }
-    }
-
-    // const formik = useFormik({
-    //     initialValues : {
-    //         caption : ""
-    //     },
-
-    //     validationSchema : Yup.object({
-    //         caption : Yup.string().min(1, "Post can't be blank").required("Post can't be blank"),
-    //     }),
-
-    //     onSubmit : (values) => {
-    //         try {
-    //             if(isVerified){
-    //                 postEverywhere(values)
-    //                 (values.caption="")
-                    
-    //             }else{
-    //                 alert('error')
-    //             }
-                
-    //         } catch (error) {
-    //             console.log(error)
-    //         }     
-    //     }
-    // })
-    // let photos = data[i].photos
-
-    // const renderPhoto = () => {
-    //     return data.map((data1) => data1.photos.map((data2) => data2.image))
-    // }
-
-    // const renderImage = () => {
-    //     return 
-    // }
-    // useEffect(()=>{
-    //     a = renderPhoto()
-    //     console.log(a, "ini a")
-    //     // b={}
-    //     // for (let i = 0; i < a.length; i++) {
-    //     //     const element = a[i];
-    //     //     for (let j = 0; j < a[i].length; j++) {
-    //     //         const element = a[i][j];
-    //     //         b = {...b, element}
-    //     //     }
-    //     // }
-    //     console.log(a)
-    // },[])
-
-   
-    
+        console.log(formData)
+    };    
 
     const renderData = () => {
         return data.map((val, index) => {
@@ -136,9 +91,7 @@ const Feed = ({profile_picture, postEverywhere, data, fetchData, isVerified}) =>
                         val.photos.map((val1, index1)=>{
                             return (
                                 <div>
-                                    <div key={index1}><img src={`${API_URL}${val1.image}`}></img></div>
-                                    <p>{`${API_URL}${val1.image}`}</p>
-
+                                    <div className='pt-2' key={index1}><img src={`${API_URL}${val1.image}`}></img></div>
                                 </div>
                             )
                         }) : null }</div>
@@ -169,9 +122,15 @@ const Feed = ({profile_picture, postEverywhere, data, fetchData, isVerified}) =>
                             <div className='text-lg'><textarea onChange={inputPostHandler} 
                                     value={input.caption} className='w-full bg-black resize-none p-2 focus:outline-none overflow-hidden' name="caption" cols="30" rows="4" placeholder="What's happening?"></textarea></div>
                             
+                            {selectedImage.map((val, index) => {
+                                return (
+                                    <div key={index} ><img src={URL.createObjectURL(val)} alt="" className="object-cover w-14 h-14 rounded-full"/></div>
+                                )
+                            }) }
+
                             <div className='pt-2 space-x-64'>
                                 <label htmlFor="pic" className='text-lg bg-pinktertiary rounded-full px-4 py-2 hover:bg-pinksecondary duration-700 cursor-pointer'>Upload</label>
-                                <input multiple className='hidden' type="file" id='pic' name='image' onClick={onFileChange}/>
+                                <input className='hidden' type="file" id='pic' name='image' onChange={onFileChange}/>
                                 <button className='text-lg bg-pinktertiary rounded-full px-4 py-2 hover:bg-pinksecondary duration-700' type='submit'>Post</button>
                             </div>
                         </div>

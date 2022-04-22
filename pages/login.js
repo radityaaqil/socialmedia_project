@@ -24,7 +24,7 @@ const Login = ({loginAction}) => {
         },
 
         validationSchema : Yup.object({
-            username : Yup.string().max(25, "Must contain 15 characters or less").required("Required").matches(/^\S*$/, "Should not contain spaces"), 
+            username : Yup.string().max(15, "Must contain 15 characters or less").required("Required").matches(/^\S*$/, "Should not contain spaces"), 
             password : Yup.string().min(8, "Must contain 8 characters or more").required("Required")
         }),
 
