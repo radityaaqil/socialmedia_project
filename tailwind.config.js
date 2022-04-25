@@ -1,3 +1,5 @@
+const { background } = require("@chakra-ui/react")
+
 module.exports = {
   content: [
   "./pages/**/*.{js,ts,jsx,tsx}",
@@ -10,6 +12,29 @@ module.exports = {
         "pinkprimary":"#6f2232",
         "pinksecondary":"#950740",
         "pinktertiary":"#c3073f",
+      },
+      // animation: {
+      //   'text':'text 5s ease infinite',
+      // },
+      keyframes: {
+        'move-bg' : {
+          to : {
+            backgroundPosition: '400% 0'
+          }
+        }
+          // 'text': {
+          //     '0%, 100%': {
+          //       'background-size':'200% 200%',
+          //         'background-position': 'left center'
+          //     },
+          //     '50%': {
+          //       'background-size':'200% 200%',
+          //         'background-position': 'right center'
+          //     }
+          // },
+      },
+      animation : {
+        'move-bg':'move-bg 8s infinite linear',
       }
     },
   },

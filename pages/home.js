@@ -12,24 +12,24 @@ const Home = () => {
 
     const { username, fullname, profile_picture, isVerified } = useUser()
 
-    const [data, setState] = useState([]);
+    // const [data, setState] = useState([]);
 
-    const fetchData = async () => {
-        try {
-        let token = Cookies.get("token")
-        let res = await axios.get(`${API_URL}/post/getpost`, {headers: {
-            authorization: `Bearer ${token}`,
-        }});
-        setState(res.data);
-        console.log(res.data)
-        } catch (error) {
-        console.log(error);
-        }
-    };
+    // const fetchData = async () => {
+    //     try {
+    //     let token = Cookies.get("token")
+    //     let res = await axios.get(`${API_URL}/post/getpost`, {headers: {
+    //         authorization: `Bearer ${token}`,
+    //     }});
+    //     setState(res.data);
+    //     console.log(res.data)
+    //     } catch (error) {
+    //     console.log(error);
+    //     }
+    // };
 
-    useEffect(() => {
-        fetchData();
-    }, []);
+    // useEffect(() => {
+    //     fetchData();
+    // }, []);
     
     //Values is an object
 
@@ -51,7 +51,7 @@ const Home = () => {
             'success'
             )
 
-          fetchData()
+        //   fetchData()
     
         } catch (error) {
             console.log(error)
@@ -71,11 +71,9 @@ const Home = () => {
             <LeftNavBar username = {username}
             fullname = {fullname}
             postEverywhere={postEverywhere}
-            fetchData = {fetchData}
             profile_picture = {profile_picture}
             isVerified={isVerified}/>
             <Feed profile_picture = {profile_picture}
-            data = {data}
             postEverywhere={postEverywhere}
             username = {username}
             fullname = {fullname}

@@ -155,6 +155,14 @@ const Profile = ({editProfile, username, fullname, bio, profile_picture, cover_p
                             <div>@{val.username}</div>
                         </div>
                         <div className='pt-2 text-lg'>{val.caption}</div>
+                        <div className='pt-2 grid grid-cols-2 gap-2'>{val.photos ? 
+                            val.photos.map((val1, index1)=>{
+                                return (
+                                    
+                                    <div className='' key={index1}><img className='rounded-xl object-cover w-full h-40' src={`${API_URL}${val1.image}`}></img></div>
+                                    
+                                )
+                            }) : null }</div>
                         <div className='pt-2 text-lg pr-6'></div>
                         <div className='pt-4 flex space-x-28'>
                             <button className='text-lg hover:scale-150 duration-700'><BiComment/></button>
@@ -163,7 +171,9 @@ const Profile = ({editProfile, username, fullname, bio, profile_picture, cover_p
                             <button className='text-lg hover:scale-150 duration-700'><FiShare/></button>
                         </div>
                     </div>
-                    <button className='pb-20'><FiMoreHorizontal/></button>
+                    <div className='mr-5'>
+                            <button className=''><FiMoreHorizontal/></button>
+                    </div>
                 </div>
             )
         })
