@@ -11,7 +11,7 @@ import Swal from 'sweetalert2';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import axios from 'axios';
 
-const Feed = ({profile_picture, postEverywhere}) => {
+const Feed = ({profile_picture, postEverywhere, data, hasMore, fetchDataOnScroll, setPage}) => {
     
     const [input, setInput] = useState({
         caption:"",
@@ -58,8 +58,6 @@ const Feed = ({profile_picture, postEverywhere}) => {
 
             await postEverywhere(formData)
 
-            await fetchDataOnScroll()
-
             setInput({...input, caption:""})
 
             // await Swal.fire(
@@ -80,40 +78,35 @@ const Feed = ({profile_picture, postEverywhere}) => {
         console.log(formData)
     };  
     
-    const [data, setState] = useState([])
-    const [hasMore, setHasMore] = useState(true);
-    const [page, setPage] = useState(0);
-    const limit = 10;
+    // const [data, setState] = useState([])
+    // const [hasMore, setHasMore] = useState(true);
+    // const [page, setPage] = useState(0);
+    // const limit = 10;
 
-    const fetchDataOnScroll = async () => {
-        try {
-          const res = await axios.get(`${API_URL}/post/getpost`, {
-            params: { page, limit },
-          });
+    // const fetchDataOnScroll = async () => {
+    //     try {
+    //       const res = await axios.get(`${API_URL}/post/getpost`, {
+    //         params: { page, limit },
+    //       });
     
-          if (res.data.length === 0) setHasMore(false);
-          setState((prev) => [...prev, ...res.data]);
-          setPage((prev) => prev + 1);
-        } catch (error) {
-          console.log("Error fetching Posts");
-          console.log(error);
-        }
-      };
+    //       if (res.data.length === 0) setHasMore(false);
+    //       setState((prev) => [...prev, ...res.data]);
+    //       setPage((prev) => prev + 1);
+    //     } catch (error) {
+    //       console.log("Error fetching Posts");
+    //       console.log(error);
+    //     }
+    //   };
 
-    useEffect(() => {
-        fetchDataOnScroll();
-    }, []);
+    // useEffect(() => {
+    //     fetchDataOnScroll();
+    // }, []);
     
 
     const renderData = () => {
         return data.map((val, index) => {
             return(
-                <InfiniteScroll
-                hasMore={hasMore}
-                next={fetchDataOnScroll}
-                // loader={<div>Loading...</div>}
-                // endMessage={<div>ga ada lagi bosku</div>}
-                dataLength={data.length}>
+               
                     <Link href={`http://localhost:3000/${val.username}/${val.postID}`}>
                         <div key={index} className='border-b-2 border-darksecondary flex pb-4 pl-6 pt-4 hover:bg-darksecondary duration-700'>
                             <div><a href="">{val.profile_picture ? <img src={`${API_URL}${val.profile_picture}`} alt="" className="object-cover w-14 h-14 rounded-full"/> : <img src={`${API_URL}/photos/defaultcoverimage.png`} alt="" className="object-cover w-14 h-14 rounded-full" />}</a></div>
@@ -126,10 +119,8 @@ const Feed = ({profile_picture, postEverywhere}) => {
                                 <div className='pt-2 text-lg'>{val.caption}</div>
                                 <div className='pt-2 grid grid-cols-2 gap-2'>{val.photos ? 
                                 val.photos.map((val1, index1)=>{
-                                    return (
-                                        
-                                        <div className='' key={index1}><img className='rounded-xl object-cover w-full h-40' src={`${API_URL}${val1.image}`}></img></div>
-                                        
+                                    return (   
+                                        <div className='' key={index1}><img className='rounded-xl object-cover w-full h-40' src={`${API_URL}${val1.image}`}></img></div>  
                                     )
                                 }) : null }</div>
                                 <div className='pt-2 text-lg pr-6'></div>
@@ -137,7 +128,7 @@ const Feed = ({profile_picture, postEverywhere}) => {
                                     <button className='text-lg hover:scale-150 duration-700'><BiComment/></button>
                                     <button className='text-lg hover:scale-150 duration-700'><FaRetweet/></button>
                                     <button className='text-lg hover:scale-150 duration-700'><AiOutlineHeart/></button>
-                                    <button className='text-lg hover:scale-150 hover:text-red-500 duration-700'><FiShare/></button>
+                                    <button className='text-lg hover:scale-150 duration-700'><FiShare/></button>
                                 </div>
                             </div>
                             <div className='mr-5'>
@@ -145,7 +136,7 @@ const Feed = ({profile_picture, postEverywhere}) => {
                             </div>
                         </div>
                     </Link> 
-                </InfiniteScroll>    
+             
             )
         })
     }
@@ -241,7 +232,16 @@ const Feed = ({profile_picture, postEverywhere}) => {
                                 </div>
                             </div>
                     </form>   
-                    {renderData()}
+                    <InfiniteScroll
+                    hasMore={hasMore}
+                    next={fetchDataOnScroll}
+                    // loader={<div>Loading...</div>}
+                    // endMessage={<div>ga ada lagi bosku</div>}
+                    dataLength={data.length}>
+
+                        {renderData()}
+                    </InfiniteScroll>
+                     
                 </div>
             </div>
       

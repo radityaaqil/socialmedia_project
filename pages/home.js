@@ -7,6 +7,7 @@ import axios from "axios";
 import API_URL from "../helpers/apiurl";
 import { useState, useEffect } from 'react';
 import Swal from 'sweetalert2';
+import InfiniteScroll from 'react-infinite-scroll-component';
 
 const Home = () => {
 
@@ -33,6 +34,35 @@ const Home = () => {
     
     //Values is an object
 
+    const [data, setState] = useState([])
+    const [hasMore, setHasMore] = useState(true);
+    const [page, setPage] = useState(0);
+    const limit = 10;
+
+    const fetchDataOnScroll = async () => {
+        try {
+          if(hasMore){
+              const res = await axios.get(`${API_URL}/post/getpost`, {
+                params: { page, limit },
+              });
+              console.log("fetchData testetstts")
+              
+              if (res.data.length === 0) setHasMore(false);
+              setState((prev) => [...prev, ...res.data]);
+              setPage((prev) => prev + 1);
+          }  
+    
+        } catch (error) {
+          console.log("Error fetching Posts");
+          console.log(error);
+        }
+      };
+
+    useEffect(() => {
+        fetchDataOnScroll();
+    }, []);
+
+
     const postEverywhere = async (values) => {
         try {
          
@@ -51,7 +81,7 @@ const Home = () => {
             'success'
             )
 
-        //   fetchData()
+          fetchDataOnScroll()
     
         } catch (error) {
             console.log(error)
@@ -76,8 +106,12 @@ const Home = () => {
             <Feed profile_picture = {profile_picture}
             postEverywhere={postEverywhere}
             username = {username}
+            fetchDataOnScroll={fetchDataOnScroll}
+            setPage={setPage}
             fullname = {fullname}
-            isVerified={isVerified}/>
+            isVerified={isVerified}
+            data={data}
+            hasMore={hasMore}/>
             <RightNavBar/>
         </div>
     )

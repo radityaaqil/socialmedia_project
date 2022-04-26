@@ -34,6 +34,18 @@ const Post = () => {
         fetchDataUserDetail();
     }, []);
 
+    const updatePost = async (formData) => {
+        try {
+            let token = Cookies.get("token")
+            await axios.patch(`${API_URL}/post/editpostcaptionimage/${postID}`, formData, {headers: {
+                authorization: `Bearer ${token}`,
+            }})
+            fetchDataUserDetail()
+        } catch (error) {
+            console.log(error)
+        }
+    };
+
     return (
         <div className='flex'>
            <LeftNavBar username = {username}
@@ -46,7 +58,9 @@ const Post = () => {
             username = {username}
             fullname = {fullname}
             isVerified={isVerified}
-            fetchDataUserDetail={fetchDataUserDetail}/>
+            fetchDataUserDetail={fetchDataUserDetail}
+            postID = {postID}
+            updatePost={updatePost}/>
             <RightBar/>
         </div>
     );

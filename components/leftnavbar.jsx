@@ -1,6 +1,6 @@
 import { BiHomeCircle } from "react-icons/bi";
 import { Avatar } from '@chakra-ui/react'
-import { IoNotificationsOutline } from "react-icons/io5";
+import { IoNotificationsOutline, IoClose  } from "react-icons/io5";
 import { IoAddCircleOutline } from "react-icons/io5";
 import { BsEnvelope } from "react-icons/bs";
 import { BsHash } from "react-icons/bs";
@@ -14,13 +14,6 @@ import {
     ModalHeader,
     ModalFooter,
     ModalBody,
-  } from '@chakra-ui/react'
-import {
-    Menu,
-    MenuButton,
-    MenuList,
-    MenuItem,
-    Button,
 } from '@chakra-ui/react'
 import { useDisclosure } from '@chakra-ui/react'
 import Link from 'next/link';
@@ -38,22 +31,48 @@ const LeftNavBar = ({username, fullname, profile_picture, postEverywhere}) => {
         caption:"",
     })
 
+    const [selectedImage, setselectedImage] = useState([]);
+
+    const onFileChange = (e) => {
+        console.log(e.target.files, "ini target files")
+        console.log(e.target.files[0], "ini target files[0]")
+
+        if(e.target.files[0]){
+   
+            setselectedImage([...selectedImage,e.target.files[0]]) 
+        }
+    }
+
     const inputTwaatHandler = (e) => {
         setInput({...input, [e.target.name]:e.target.value})
     }  
 
     const submitPost = async (e) => {
         e.preventDefault()
-        try {
-            postEverywhere(input)
+        const formData = new FormData();
+        let insertData = {
+          caption: input.caption,
+        };
 
-            onClose()
+        for (let i = 0; i < selectedImage.length; i++) {            
+            formData.append(`image`, selectedImage[i]);
+        }
+
+        formData.append("data", JSON.stringify(insertData));
+ 
+        try {
+       
+            await postEverywhere(formData)
+
+            setInput({...input, caption:""})
 
             await Swal.fire(
-            'Post sent!',
-            '',
-            'success'
-            )
+                'Post sent!',
+                '',
+                'success'
+                )
+                
+            console.log(formData)
             
         } catch (error) {
             await Swal.fire({
@@ -62,48 +81,8 @@ const LeftNavBar = ({username, fullname, profile_picture, postEverywhere}) => {
             text: (error.response.data.message || "Network Error"),
             })
         }
+        console.log(formData)
     }
-
-
-    // const [data, setState] = useState([]);
-
-    // const fetchData = async () => {
-    //     try {
-    //     let res = await axios.get(`${API_URL}/data`);
-    //     setState(res.data);
-    //     } catch (error) {
-    //     console.log(error);
-    //     }
-    // };
-
-    // useEffect(() => {
-    //     fetchData();
-    // }, []);
-
-    // const formik = useFormik({
-    //     initialValues : {
-    //         caption : ""
-    //     },
-
-    //     validationSchema : Yup.object({
-    //         caption : Yup.string().min(1, "Post can't be blank").required("Post can't be blank"),
-    //     }),
-
-    //     onSubmit : async (values) => {
-    //         try {
-    //             if(isVerified){
-    //                 postEverywhere(values)
-    //                 fetchData()
-                    
-    //             }else{
-    //                 alert('error')
-    //             }
-                
-    //         } catch (error) {
-    //             console.log(error)
-    //         }     
-    //     }
-    // })
 
     return(
         <div className="bg-black min-h-screen w-3/12 border-r-2 border-darksecondary">
@@ -161,17 +140,28 @@ const LeftNavBar = ({username, fullname, profile_picture, postEverywhere}) => {
                                 <button className="bg-darkprimary rounded-full py-2 px-3 text-base text-white hover:bg-darksecondary duration-700" onClick={onClose} type="button">
                                 Cancel
                                 </button>
-                                <button className='bg-pinktertiary text-white rounded-full py-2 px-3 text-base hover:bg-pinksecondary duration-700' type="submit">Twaat</button>
+                                <button onClick={onClose} className='bg-pinktertiary text-white rounded-full py-2 px-3 text-base hover:bg-pinksecondary duration-700' type="submit">Twaat</button>
                             </ModalHeader>
                         
-                        <ModalBody className='flex gap-4 bg-darkprimary'>
-                            <Avatar size='sm' bg='pink.500'/>
-                            <textarea name="caption" value={input.caption} onChange={inputTwaatHandler} className='pt-1 focus:outline-none bg-darkprimary text-white resize-none'  cols="36" rows="10" placeholder="What's happening..."></textarea>
+                        <ModalBody className=' bg-darkprimary'>
+                            <div className="flex gap-4">
+                                <img className="rounded-full w-10 h-10 object-cover" src={`${API_URL}${profile_picture}`} alt="" />
+                                <textarea name="caption" value={input.caption} onChange={inputTwaatHandler} className='pt-1 focus:outline-none bg-darkprimary text-white resize-none'  cols="36" rows="3" placeholder="What's happening..."></textarea>
+                            </div>
+                            <div className='mr-5 grid grid-cols-4 gap-2'>
+                                {selectedImage.map((val, index) => {         
+                                    return  (
+                                        <div className='relative' key={index} ><img src={URL.createObjectURL(val)} alt="" className="rounded-xl object-cover w-full h-40"/>
+                                        <button type="button" onClick={()=>{setselectedImage(selectedImage.filter((e)=> e !== val))}} className='absolute top-1 left-1 p-1 bg-darkprimary rounded-full bg-opacity-60 text-white hover:bg-darksecondary hover:bg-opacity-60 duration-500'><IoClose/></button>
+                                        </div>
+                                    )
+                                }) }
+                            </div>
                         </ModalBody>
             
                         <ModalFooter className='bg-darkprimary'>
-                            <label className='bg-pinktertiary text-white rounded-full py-2 px-3 text-base hover:bg-pinksecondary duration-700 cursor-pointer' for="inputPic">Upload</label>
-                            <input className='hidden' type="file" id='inputPic' />
+                            <label className='bg-pinktertiary text-white rounded-full py-2 px-3 text-base hover:bg-pinksecondary duration-700 cursor-pointer' for="inputPic">Add Photos</label>
+                            <input onChange={onFileChange} className='hidden' type="file" id='inputPic' />
                         </ModalFooter>
                         </ModalContent>
                     </form>

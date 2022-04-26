@@ -7,9 +7,8 @@ import {
     ModalOverlay,
     ModalContent,
     ModalHeader,
-    ModalFooter,
     ModalBody,
-  } from '@chakra-ui/react'
+} from '@chakra-ui/react'
 import { useDisclosure } from '@chakra-ui/react'
 import { useFormik } from "formik";
 import Cookies from "js-cookie";
@@ -20,7 +19,7 @@ import { editProfile } from "../redux/actions/userActions";
 import { connect } from "react-redux";
 import { useRouter } from "next/router";
 import * as Yup from "yup";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { FaRetweet } from 'react-icons/fa'
 import { BiComment } from "react-icons/bi";
 import { AiOutlineHeart } from "react-icons/ai";
