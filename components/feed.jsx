@@ -11,7 +11,7 @@ import Swal from 'sweetalert2';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import axios from 'axios';
 
-const Feed = ({profile_picture, postEverywhere, data, hasMore, fetchDataOnScroll, setPage}) => {
+const Feed = ({profile_picture, postEverywhere, data, hasMore, fetchDataOnScroll}) => {
     
     const [input, setInput] = useState({
         caption:"",
@@ -65,7 +65,6 @@ const Feed = ({profile_picture, postEverywhere, data, hasMore, fetchDataOnScroll
             // '',
             // 'success'
             // )
-
             console.log(formData)
             
         } catch (error) {
@@ -114,7 +113,7 @@ const Feed = ({profile_picture, postEverywhere, data, hasMore, fetchDataOnScroll
                                 <div className='flex space-x-2'>
                                     <div>{val.fullname}</div>
                                     <div>@{val.username}</div>
-                                    {/* <div>- {val.created_at}</div> */}
+                                    <div>- {val.fromnow}</div>
                                 </div>
                                 <div className='pt-2 text-lg'>{val.caption}</div>
                                 <div className='pt-2 grid grid-cols-2 gap-2'>{val.photos ? 
@@ -125,9 +124,9 @@ const Feed = ({profile_picture, postEverywhere, data, hasMore, fetchDataOnScroll
                                 }) : null }</div>
                                 <div className='pt-2 text-lg pr-6'></div>
                                 <div className='pt-4 flex space-x-28'>
-                                    <button className='text-lg hover:scale-150 duration-700'><BiComment/></button>
+                                    <button className='text-lg hover:scale-150 duration-700 flex items-center gap-2'>{val.comments ? val.comments : null}<BiComment/></button>
                                     <button className='text-lg hover:scale-150 duration-700'><FaRetweet/></button>
-                                    <button className='text-lg hover:scale-150 duration-700'><AiOutlineHeart/></button>
+                                    <button className='text-lg hover:scale-150 duration-700 flex items-center gap-2'>{val.likes ? val.likes : null}<AiOutlineHeart/></button>
                                     <button className='text-lg hover:scale-150 duration-700'><FiShare/></button>
                                 </div>
                             </div>
@@ -238,7 +237,6 @@ const Feed = ({profile_picture, postEverywhere, data, hasMore, fetchDataOnScroll
                     // loader={<div>Loading...</div>}
                     // endMessage={<div>ga ada lagi bosku</div>}
                     dataLength={data.length}>
-
                         {renderData()}
                     </InfiniteScroll>
                      

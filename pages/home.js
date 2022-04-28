@@ -13,27 +13,6 @@ const Home = () => {
 
     const { username, fullname, profile_picture, isVerified } = useUser()
 
-    // const [data, setState] = useState([]);
-
-    // const fetchData = async () => {
-    //     try {
-    //     let token = Cookies.get("token")
-    //     let res = await axios.get(`${API_URL}/post/getpost`, {headers: {
-    //         authorization: `Bearer ${token}`,
-    //     }});
-    //     setState(res.data);
-    //     console.log(res.data)
-    //     } catch (error) {
-    //     console.log(error);
-    //     }
-    // };
-
-    // useEffect(() => {
-    //     fetchData();
-    // }, []);
-    
-    //Values is an object
-
     const [data, setState] = useState([])
     const [hasMore, setHasMore] = useState(true);
     const [page, setPage] = useState(0);
@@ -58,8 +37,19 @@ const Home = () => {
         }
       };
 
+    const fetchLastPost = async () => {
+      try {
+        const res = await axios.get(`${API_URL}/post/getpost`, {
+          params: { page:0, limit:1 },
+        });
+        setState([res.data[0], ...data]);
+      } catch (error) {
+        console.log(error)
+      }
+    }
+
     useEffect(() => {
-        fetchDataOnScroll();
+      fetchDataOnScroll()
     }, []);
 
 
@@ -68,10 +58,7 @@ const Home = () => {
          
           let token = Cookies.get("token")
       
-          await axios.post(`${API_URL}/post/postcaptionimage`,
-              values
-          ,
-          {headers: {
+          await axios.post(`${API_URL}/post/postcaptionimage`, values, {headers: {
               authorization: `Bearer ${token}`,
           }},)
 
@@ -80,8 +67,6 @@ const Home = () => {
             '',
             'success'
             )
-
-          fetchDataOnScroll()
     
         } catch (error) {
             console.log(error)
@@ -92,7 +77,10 @@ const Home = () => {
                 text: (error.response.data.message || "Network Error"),
                 })
         } finally {
-         
+          setPage(0)
+          setHasMore(true)
+          setState([])
+          fetchLastPost()
         }
       };
       
@@ -107,7 +95,6 @@ const Home = () => {
             postEverywhere={postEverywhere}
             username = {username}
             fetchDataOnScroll={fetchDataOnScroll}
-            setPage={setPage}
             fullname = {fullname}
             isVerified={isVerified}
             data={data}

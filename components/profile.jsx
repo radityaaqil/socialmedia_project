@@ -152,14 +152,13 @@ const Profile = ({editProfile, username, fullname, bio, profile_picture, cover_p
                         <div className='flex space-x-2'>
                             <div>{val.fullname}</div>
                             <div>@{val.username}</div>
+                            <div>- {val.fromnow}</div>
                         </div>
                         <div className='pt-2 text-lg'>{val.caption}</div>
                         <div className='pt-2 grid grid-cols-2 gap-2'>{val.photos ? 
                             val.photos.map((val1, index1)=>{
-                                return (
-                                    
-                                    <div className='' key={index1}><img className='rounded-xl object-cover w-full h-40' src={`${API_URL}${val1.image}`}></img></div>
-                                    
+                                return (    
+                                    <div className='' key={index1}><img className='rounded-xl object-cover w-full h-40' src={`${API_URL}${val1.image}`}></img></div>    
                                 )
                             }) : null }</div>
                         <div className='pt-2 text-lg pr-6'></div>

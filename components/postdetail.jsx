@@ -2,6 +2,7 @@ import { useEffect } from "react"
 import API_URL from "../helpers/apiurl";
 import { BiComment } from "react-icons/bi";
 import { AiOutlineHeart } from "react-icons/ai";
+import { AiFillHeart } from "react-icons/ai";
 import { FiShare} from "react-icons/fi";
 import { FiMoreHorizontal} from "react-icons/fi";
 import { IoClose } from "react-icons/io5";
@@ -19,13 +20,27 @@ import axios from "axios";
 import Cookies from "js-cookie"
 import Swal from "sweetalert2";
 
-const Postdetail = ({data, fetchDataUserDetail, profile_picture, updatePost}) => {
+const Postdetail = ({data, username, profile_picture, updatePost, deletePost, addLikes, commentsData, insertComment}) => {
 
     const { isOpen, onOpen, onClose} = useDisclosure();
     
     const [input, setInput] = useState({
         caption:"",
     });
+
+    const [inputComment, setinputComment] = useState({
+        comment:""
+    })
+
+    console.log(data, "data oi")
+
+    const [likesB, setlikesB] = useState(false)
+
+    const handleClick = () => {
+        setlikesB(!likesB)
+        addLikes()
+    }
+
 
     const [selectedImage, setselectedImage] = useState([]);
 
@@ -35,13 +50,42 @@ const Postdetail = ({data, fetchDataUserDetail, profile_picture, updatePost}) =>
 
         if(e.target.files[0]){
    
-            setselectedImage([...selectedImage,e.target.files[0]]) 
+            setselectedImage([...selectedImage,e.target.files[0]]);
         }
     }
 
     const inputTwaatHandler = (e) => {
-        setInput({...input, [e.target.name]:e.target.value})
+        setInput({...input, [e.target.name]:e.target.value});
     }  
+
+    const inputCommentHandler = (e) => {
+        setinputComment({...inputComment, [e.target.name]:e.target.value});
+    }
+
+    const submitComment = async (e) => {
+        e.preventDefault();
+        let insertinputComment = {
+            comment:inputComment.comment
+        };
+        try {
+            insertComment(insertinputComment);
+
+            await Swal.fire(
+                'Reply sent!',
+                '',
+                'success'
+            )
+                
+            setinputComment({...input, comment:""});
+        } catch (error) {
+            console.log(error);
+            await Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: ("Network Error"),
+            });
+        };   
+    };
 
     const submitPost = async (e) => {
         e.preventDefault()
@@ -90,28 +134,7 @@ const Postdetail = ({data, fetchDataUserDetail, profile_picture, updatePost}) =>
     //     renderData()
     // }, []);
 
-    const deletePost = () => {
-        Swal.fire({
-            title: 'Are you sure?',
-            text: "You won't be able to revert this!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes, delete it!'
-          }).then((result) => {
-            if (result.isConfirmed) {
-
-                
-
-              Swal.fire(
-                'Deleted!',
-                'Your post has been deleted.',
-                'success'
-              )
-            }
-          })
-    }
+    
 
     const renderData = () => {
         return data.map((val, index) => {
@@ -133,10 +156,13 @@ const Postdetail = ({data, fetchDataUserDetail, profile_picture, updatePost}) =>
                         }) : null }</div>
                         <div className='pt-2 text-lg pr-6'></div>
                         <div className='pt-4 flex space-x-28'>
-                            <button onClick={onOpen} className='text-lg hover:scale-150 duration-700'><BiComment/></button>
-                            <button className='text-lg hover:scale-150 duration-700'><AiOutlineHeart/></button>
+                            {(username == val.username) ? <button onClick={onOpen} className='text-lg hover:scale-150 duration-700'><BiComment/></button> : null}
+                            
+                            {likesB ? <button onClick={()=>{handleClick()}} className='text-lg text-red-500 hover:scale-150 duration-700 flex items-center gap-2'>{val.likes ? val.likes : null}<AiFillHeart/></button> : <button onClick={()=>{handleClick()}} className='text-lg hover:scale-150 duration-700 flex items-center gap-2'>{val.likes ? val.likes : null}<AiOutlineHeart/></button>}
+                            
                             <button className='text-lg hover:scale-150 duration-700'><FiShare/></button>
-                            <button className='text-lg hover:scale-150 hover:text-red-500 duration-700'><IoClose/></button>
+                            {(username == val.username) ? <button onClick={() => {deletePost()}} className='text-lg hover:scale-150 hover:text-red-500 duration-700'><IoClose/></button> : null}
+                            
                         </div>
                     </div>
                     <div className='mr-5'>
@@ -146,12 +172,38 @@ const Postdetail = ({data, fetchDataUserDetail, profile_picture, updatePost}) =>
             )
         })
     }
+
+    const renderComment = () => {
+        return commentsData.map((val, index) => {
+            return (
+                <div key={index} className="py-4 pl-8 border-b-2 border-darksecondary">
+                    <div className="flex gap-3 items-center">
+                        <img className="object-cover w-10 h-10 rounded-full" src={`${API_URL}${val.profile_picture}`} alt="" />
+                        <div>@{val.username}</div>
+                        <div>- {val.fromnow}</div>
+                    </div>
+                    <div className="pt-2">{val.comment}</div>
+                </div>
+            )
+        })
+    }
     
     
     return (
         <div className="bg-black min-h-screen w-5/12 relative text-white">
             <div className='bg-black bg-opacity-70 backdrop-blur-md fixed top-0 pl-6 py-6 w-5/12 z-10 text-2xl'>Post</div>
             {renderData()}
+            <div className="pl-8 pt-4 border-b-2 border-darksecondary pb-4">
+                <div className="flex items-center gap-3">
+                    <img className="object-cover w-10 h-10 rounded-full" src={`${API_URL}${profile_picture}`} alt="" />
+                    <div>@{username}</div>
+                </div>
+                <div className="flex justify-between items-center">
+                    <textarea onChange={inputCommentHandler} value={inputComment.comment} className="resize-none bg-black text-white focus:outline-none pt-1" name="comment" rows="1" cols="50" placeholder="Post your reply..."></textarea>
+                    <button onClick={submitComment} className='bg-pinktertiary text-white rounded-full py-2 mr-8 px-3 text-base hover:bg-pinksecondary duration-700'>Reply</button>
+                </div>
+            </div>
+            {renderComment()}
             <Modal size="sm" isOpen={isOpen} onClose={onClose} roundedTop='3xl'>
                 <ModalOverlay />
                     <form onSubmit={submitPost}>
