@@ -11,6 +11,7 @@ const INITIAL_STATE = {
     cover_picture:"",
     location:"",
     caption:"",
+    createdAt:"",
 };
   
   const userReducer = (state = INITIAL_STATE, action) => {

@@ -9,7 +9,7 @@ import axios from "axios";
 
 const Userprofile = () => {
 
-    const { username, fullname, bio, profile_picture, cover_picture, location } = useUser()
+    const { username, fullname, bio, profile_picture, cover_picture, location, createdAt } = useUser()
 
     const [data, setState] = useState([]);
 
@@ -26,8 +26,50 @@ const Userprofile = () => {
         }
     };
 
+    const fetchDataComment = async () => {
+        try {
+        let token = Cookies.get("token")
+        let res = await axios.get(`${API_URL}/post/getusercomment`, {headers: {
+            authorization: `Bearer ${token}`,
+        }});
+        setuserCommentsData(res.data);
+        console.log(res.data)
+        } catch (error) {
+        console.log(error);
+        }
+    };
+
+    const fetchDataMedia = async () => {
+        try {
+        let token = Cookies.get("token")
+        let res = await axios.get(`${API_URL}/post/getuserpostmedia`, {headers: {
+            authorization: `Bearer ${token}`,
+        }});
+        setMedia(res.data);
+        console.log(res.data)
+        } catch (error) {
+        console.log(error);
+        }
+    };
+
+    const fetchLikedPost = async () => {
+        try {
+        let token = Cookies.get("token")
+        let res = await axios.get(`${API_URL}/post/getlikedpost`, {headers: {
+            authorization: `Bearer ${token}`,
+        }});
+        setlikedPosts(res.data);
+        console.log(res.data)
+        } catch (error) {
+        console.log(error);
+        }
+    };
+
     useEffect(() => {
         fetchData();
+        fetchDataComment();
+        fetchDataMedia();
+        fetchLikedPost();
     }, []);
     
     //Values is an object
@@ -77,6 +119,23 @@ const Userprofile = () => {
         fetchPostCounts();
     }, []);
 
+    //User comments
+    const [userCommentsData, setuserCommentsData] = useState([]);
+
+    const userComments =  async () => {
+        try {
+            let token = Cookies.get("token");
+            let res = await axios.get(`${API_URL}/post/getusercomment`, {
+                headers: {
+                    authorization: `Bearer ${token}`,
+                },
+            });
+            setuserCommentsData(res.data);
+        } catch (error) {
+            console.log(error)
+        }
+    };
+
     //User Posts 
 
     const [posts, setPosts] = useState([])
@@ -94,11 +153,47 @@ const Userprofile = () => {
         } catch (error) {
             console.log(error)
         }
-    }
+    };
 
     useEffect(() => {
         userPosts();
     }, []);
+
+    //User media
+    const [media, setMedia] = useState([])
+
+    const userPostMedia = async () => {
+        try {
+            let token = Cookies.get("token");
+            let res = await axios.get(`${API_URL}/post/getuserpostmedia`, {
+                headers: {
+                    authorization: `Bearer ${token}`,
+                },
+            });
+            setMedia(res.data)
+            
+        } catch (error) {
+            console.log(error)
+        }
+    };
+
+    //Liked post
+    const [likedPosts, setlikedPosts] = useState([]);
+
+    const userLikedPosts = async () => {
+        try {
+            let token = Cookies.get("token");
+            let res = await axios.get(`${API_URL}/post/getlikedpost`, {
+                headers: {
+                    authorization: `Bearer ${token}`,
+                },
+            });
+            setlikedPosts(res.data)
+            
+        } catch (error) {
+            console.log(error)
+        }
+    };    
 
     return ( 
         <div className="flex">
@@ -117,8 +212,15 @@ const Userprofile = () => {
             cover_picture = {cover_picture}
             location = {location}
             posts={posts}
+            userCommentsData={userCommentsData}
+            media={media}
+            likedPosts={likedPosts}
             userPosts={userPosts}
-            counts={counts}/>
+            userComments={userComments}
+            userPostMedia={userPostMedia}
+            userLikedPosts={userLikedPosts}
+            counts={counts}
+            createdAt={createdAt}/>
             <RightBarProfile/>
         </div>
     );

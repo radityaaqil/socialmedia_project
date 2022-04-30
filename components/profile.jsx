@@ -9,6 +9,7 @@ import {
     ModalHeader,
     ModalBody,
 } from '@chakra-ui/react'
+import { Tabs, TabList, TabPanels, Tab, TabPanel } from '@chakra-ui/react'
 import { useDisclosure } from '@chakra-ui/react'
 import { useFormik } from "formik";
 import Cookies from "js-cookie";
@@ -23,10 +24,13 @@ import React, { useState } from "react";
 import { FaRetweet } from 'react-icons/fa'
 import { BiComment } from "react-icons/bi";
 import { AiOutlineHeart } from "react-icons/ai";
+import { AiFillHeart } from "react-icons/ai";
 import { FiShare} from "react-icons/fi";
 import { FiMoreHorizontal} from "react-icons/fi";
+import moment from "moment";
+import Link from "next/link";
 
-const Profile = ({editProfile, username, fullname, bio, profile_picture, cover_picture, location, posts, userPosts, counts}) => {
+const Profile = ({editProfile, username, fullname, bio, profile_picture, cover_picture, location, posts, userPosts, counts, createdAt, userCommentsData, userComments, media, userPostMedia, userLikedPosts, likedPosts}) => {
     
     const router = useRouter()
 
@@ -44,7 +48,7 @@ const Profile = ({editProfile, username, fullname, bio, profile_picture, cover_p
 
     const [scrollBehavior, setScrollBehavior] = React.useState('inside')
     
-    const [isActive, setActive] = useState();
+    const [isActive, setActive] = useState(true);
 
     const formik = useFormik({
         initialValues : {
@@ -72,10 +76,26 @@ const Profile = ({editProfile, username, fullname, bio, profile_picture, cover_p
 
     })
     
-    const ToggleClass = () => {
-      setActive(!isActive);
+    const TogglePost = () => {
+    //   setActive(!isActive);
       userPosts()
     };
+
+    const ToggleComment = () => {
+        //   setActive(!isActive);
+        userComments()
+    };
+
+    const ToggleMedia = () => {
+        //   setActive(!isActive);
+        userPostMedia()
+    };
+
+    const ToggleLikedPosts = () => {
+        //   setActive(!isActive);
+        userLikedPosts()
+    };
+
 
     const onFileChange = (e) => {
         console.log(e.target.files[0])
@@ -140,42 +160,131 @@ const Profile = ({editProfile, username, fullname, bio, profile_picture, cover_p
         }
     }
 
-    
-   
-
     const renderData = () => {
         return posts.map((val, index) => {
             return(
-                <div key={index} className='border-b-2 border-darksecondary flex pb-4 pl-6 pt-4 hover:bg-darksecondary duration-700'>
-                    <div><a href="">{val.profile_picture ? <img src={`${API_URL}${val.profile_picture}`} alt="" className="object-cover w-14 h-14 rounded-full"/> : <img src={`${API_URL}/photos/defaultcoverimage.png`} alt="" className="object-cover w-14 h-14 rounded-full" />}</a></div>
-                    <div className='text-white flex flex-col pl-6'>
-                        <div className='flex space-x-2'>
-                            <div>{val.fullname}</div>
-                            <div>@{val.username}</div>
-                            <div>- {val.fromnow}</div>
+                <Link href={`http://localhost:3000/${val.username}/${val.postID}`}>
+                    <div key={index} className='border-b-2 border-darksecondary flex pb-4 space-x-2 pt-4 hover:bg-darksecondary duration-700'>
+                        <div className="min-w-fit"><a href="">{val.profile_picture ? <img src={`${API_URL}${val.profile_picture}`} alt="" className="object-cover w-14 h-14 rounded-full"/> : <img src={`${API_URL}/photos/defaultcoverimage.png`} alt="" className="object-cover w-14 h-14 rounded-full" />}</a></div>
+                        <div className='text-white flex flex-col'>
+                            <div className='flex space-x-2'>
+                                <div>{val.fullname}</div>
+                                <div>@{val.username}</div>
+                                <div>- {val.fromnow}</div>
+                            </div>
+                            <div className='pt-2 text-lg'>{val.caption}</div>
+                            <div className='pt-2 grid grid-cols-2 gap-2'>{val.photos ? 
+                                val.photos.map((val1, index1)=>{
+                                    return (    
+                                        <div className='' key={index1}><img className='rounded-xl object-cover w-full h-40' src={`${API_URL}${val1.image}`}></img></div>    
+                                    )
+                                }) : null }</div>
+                            <div className='pt-2 text-lg pr-6'></div>
+                            <div className='pt-4 flex space-x-28'>
+                                <button className='text-lg hover:scale-150 duration-700 flex items-center gap-2'>{val.comments ? val.comments : null}<BiComment/></button>
+                                <button className='text-lg hover:scale-150 duration-700'><FaRetweet/></button>
+                                {val.alreadyliked ? <button className='text-lg text-red-500 hover:scale-150 duration-700 flex items-center gap-2'>{val.likes ? val.likes : null}<AiFillHeart/></button> : <button className='text-lg hover:scale-150 duration-700 flex items-center gap-2'>{val.likes ? val.likes : null}<AiOutlineHeart/></button>}
+                                <button className='text-lg hover:scale-150 duration-700'><FiShare/></button>
+                            </div>
                         </div>
-                        <div className='pt-2 text-lg'>{val.caption}</div>
-                        <div className='pt-2 grid grid-cols-2 gap-2'>{val.photos ? 
-                            val.photos.map((val1, index1)=>{
-                                return (    
-                                    <div className='' key={index1}><img className='rounded-xl object-cover w-full h-40' src={`${API_URL}${val1.image}`}></img></div>    
-                                )
-                            }) : null }</div>
-                        <div className='pt-2 text-lg pr-6'></div>
-                        <div className='pt-4 flex space-x-28'>
-                            <button className='text-lg hover:scale-150 duration-700'><BiComment/></button>
-                            <button className='text-lg hover:scale-150 duration-700'><FaRetweet/></button>
-                            <button className='text-lg hover:scale-150 duration-700'><AiOutlineHeart/></button>
-                            <button className='text-lg hover:scale-150 duration-700'><FiShare/></button>
+                        <div className='mr-5'>
+                                <button className=''><FiMoreHorizontal/></button>
                         </div>
                     </div>
-                    <div className='mr-5'>
-                            <button className=''><FiMoreHorizontal/></button>
+                </Link>
+            )
+        })
+    };
+
+    const renderDataMedia = () => {
+        return media.map((val, index) => {
+            return(
+                <Link href={`http://localhost:3000/${val.username}/${val.postID}`}>
+                    <div key={index} className='border-b-2 border-darksecondary flex pb-4 space-x-2 pt-4 hover:bg-darksecondary duration-700'>
+                        <div className="min-w-fit"><a href="">{val.profile_picture ? <img src={`${API_URL}${val.profile_picture}`} alt="" className="object-cover w-14 h-14 rounded-full"/> : <img src={`${API_URL}/photos/defaultcoverimage.png`} alt="" className="object-cover w-14 h-14 rounded-full" />}</a></div>
+                        <div className='text-white flex flex-col'>
+                            <div className='flex space-x-2'>
+                                <div>{val.fullname}</div>
+                                <div>@{val.username}</div>
+                                <div>- {val.fromnow}</div>
+                            </div>
+                            <div className='pt-2 text-lg'>{val.caption}</div>
+                            <div className='pt-2 grid grid-cols-2 gap-2'>{val.photos ? 
+                                val.photos.map((val1, index1)=>{
+                                    return (    
+                                        <div className='' key={index1}><img className='rounded-xl object-cover w-full h-40' src={`${API_URL}${val1.image}`}></img></div>    
+                                    )
+                                }) : null }</div>
+                            <div className='pt-2 text-lg pr-6'></div>
+                            <div className='pt-4 flex space-x-28'>
+                                <button className='text-lg hover:scale-150 duration-700 flex items-center gap-2'>{val.comments ? val.comments : null}<BiComment/></button>
+                                <button className='text-lg hover:scale-150 duration-700'><FaRetweet/></button>
+                                {val.alreadyliked ? <button className='text-lg text-red-500 hover:scale-150 duration-700 flex items-center gap-2'>{val.likes ? val.likes : null}<AiFillHeart/></button> : <button className='text-lg hover:scale-150 duration-700 flex items-center gap-2'>{val.likes ? val.likes : null}<AiOutlineHeart/></button>}
+                                <button className='text-lg hover:scale-150 duration-700'><FiShare/></button>
+                            </div>
+                        </div>
+                        <div className='mr-5'>
+                                <button className=''><FiMoreHorizontal/></button>
+                        </div>
                     </div>
+                </Link>
+            )
+        })
+    };
+
+    const renderUserComments = () => {
+        return userCommentsData.map((val, index) => {
+            return (
+                <div key={index} className="py-4 pl-8 border-b-2 border-darksecondary">
+                    <div className="flex gap-3 items-center">
+                        <img className="object-cover w-10 h-10 rounded-full" src={`${API_URL}${val.profile_picture}`} alt="" />
+                        <div>@{val.username}</div>
+                        <div>- {val.fromnow}</div>
+                    </div>
+                    <div className="pt-2">{val.comment}</div>
                 </div>
             )
         })
-    }
+    };
+
+    const renderUserLikedPosts = () => {
+        return likedPosts.map((val, index) => {
+            return(
+               
+                    <Link href={`http://localhost:3000/${val.username}/${val.postID}`}>
+                        <div key={index} className='border-b-2 border-darksecondary flex pb-4 pl-6 pt-4 hover:bg-darksecondary duration-700'>
+                            <div className='min-w-fit'><a href="">{val.profile_picture ? <img src={`${API_URL}${val.profile_picture}`} alt="" className="object-cover w-14 h-14 rounded-full"/> : <img src={`${API_URL}/photos/defaultcoverimage.png`} alt="" className="object-cover w-14 h-14 rounded-full" />}</a></div>
+                            <div className='text-white flex flex-col pl-6'>
+                                <div className='flex space-x-2'>
+                                    <div>{val.fullname}</div>
+                                    <div>@{val.username}</div>
+                                    <div>- {val.fromnow}</div>
+                                </div>
+                                <div className='pt-2 text-lg'>{val.caption}</div>
+                                <div className='pt-2 grid grid-cols-2 gap-2'>{val.photos ? 
+                                val.photos.map((val1, index1)=>{
+                                    return (   
+                                        <div className='' key={index1}><img className='rounded-xl object-cover w-full h-40' src={`${API_URL}${val1.image}`}></img></div>  
+                                    )
+                                }) : null }</div>
+                                <div className='pt-2 text-lg pr-6'></div>
+                                <div className='pt-4 flex space-x-28'>
+                                    <button className='text-lg hover:scale-150 duration-700 flex items-center gap-2'>{val.comments ? val.comments : null}<BiComment/></button>
+                                    <button className='text-lg hover:scale-150 duration-700'><FaRetweet/></button>
+                                    {val.alreadyliked ? <button className='text-lg text-red-500 hover:scale-150 duration-700 flex items-center gap-2'>{val.likes ? val.likes : null}<AiFillHeart/></button> : <button className='text-lg hover:scale-150 duration-700 flex items-center gap-2'>{val.likes ? val.likes : null}<AiOutlineHeart/></button>}
+                                   
+                                    <button className='text-lg hover:scale-150 duration-700'><FiShare/></button>
+                                </div>
+                            </div>
+                            <div className='mr-5'>
+                                <button className=''><FiMoreHorizontal/></button>
+                            </div>
+                        </div>
+                    </Link> 
+             
+            )
+        })
+    };
 
     return (
         <div className="bg-black min-h-screen w-5/12 relative text-white">
@@ -207,7 +316,7 @@ const Profile = ({editProfile, username, fullname, bio, profile_picture, cover_p
                 <div className="flex gap-10 pt-3">
                     {location ? <div className="flex items-center gap-2"><IoLocationOutline/><span>{location}</span></div> : null}
                     
-                    <div className="flex items-center gap-2"><FaCalendarAlt/><span>Joined March 2010</span></div>
+                    <div className="flex items-center gap-2"><FaCalendarAlt/><span>{moment(createdAt).format("MMMM YYYY")}</span></div>
                 </div>
                 <div className="flex gap-10 pt-3">
                     <div className="font-bold">1,099 <span className="font-thin">Following</span></div>
@@ -215,7 +324,7 @@ const Profile = ({editProfile, username, fullname, bio, profile_picture, cover_p
                 </div>
             </div>
 
-            <div className="flex pt-8 text-lg border-b-2 border-darksecondary">
+            {/* <div className="flex pt-8 text-lg border-b-2 border-darksecondary">
                 <div onClick={ToggleClass} className={isActive ? "w-1/4 bg-pinktertiary text-center cursor-pointer" : "w-1/4 text-center hover:bg-pinktertiary cursor-pointer"}>
                     <button className="py-3">Post</button>
                 </div>
@@ -226,9 +335,32 @@ const Profile = ({editProfile, username, fullname, bio, profile_picture, cover_p
                 </div><div className="w-1/4 hover:bg-pinktertiary text-center">
                     <button className="py-3">Likes</button>
                 </div>
-            </div>
+            </div> */}
 
-            {renderData()}
+            <Tabs className="pt-6" isFitted variant='solid-rounded' colorScheme='pinktertiary'>
+                <TabList>
+                    <Tab onClick={TogglePost}>Post</Tab>
+                    <Tab onClick={ToggleComment}>Comments</Tab>
+                    <Tab onClick={ToggleMedia}>Media</Tab>
+                    <Tab onClick={ToggleLikedPosts}>Likes</Tab>
+                </TabList>
+                <TabPanels>
+                    <TabPanel>
+                        {renderData()}
+                    </TabPanel>
+                    <TabPanel>
+                        {renderUserComments()}
+                    </TabPanel>
+                    <TabPanel>
+                        {renderDataMedia()}
+                    </TabPanel>
+                    <TabPanel>
+                        {renderUserLikedPosts()}
+                    </TabPanel>
+                </TabPanels>
+            </Tabs>
+
+           
 
             {/* Edit Profile Modal */}
 

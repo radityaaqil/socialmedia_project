@@ -1,6 +1,7 @@
 import { FaRetweet } from 'react-icons/fa'
 import { BiComment } from "react-icons/bi";
 import { AiOutlineHeart } from "react-icons/ai";
+import { AiFillHeart } from "react-icons/ai";
 import { FiShare} from "react-icons/fi";
 import { FiMoreHorizontal} from "react-icons/fi";
 import { useState, useEffect } from 'react';
@@ -108,7 +109,7 @@ const Feed = ({profile_picture, postEverywhere, data, hasMore, fetchDataOnScroll
                
                     <Link href={`http://localhost:3000/${val.username}/${val.postID}`}>
                         <div key={index} className='border-b-2 border-darksecondary flex pb-4 pl-6 pt-4 hover:bg-darksecondary duration-700'>
-                            <div><a href="">{val.profile_picture ? <img src={`${API_URL}${val.profile_picture}`} alt="" className="object-cover w-14 h-14 rounded-full"/> : <img src={`${API_URL}/photos/defaultcoverimage.png`} alt="" className="object-cover w-14 h-14 rounded-full" />}</a></div>
+                            <div className='min-w-fit'><a href="">{val.profile_picture ? <img src={`${API_URL}${val.profile_picture}`} alt="" className="object-cover w-14 h-14 rounded-full"/> : <img src={`${API_URL}/photos/defaultcoverimage.png`} alt="" className="object-cover w-14 h-14 rounded-full" />}</a></div>
                             <div className='text-white flex flex-col pl-6'>
                                 <div className='flex space-x-2'>
                                     <div>{val.fullname}</div>
@@ -126,7 +127,8 @@ const Feed = ({profile_picture, postEverywhere, data, hasMore, fetchDataOnScroll
                                 <div className='pt-4 flex space-x-28'>
                                     <button className='text-lg hover:scale-150 duration-700 flex items-center gap-2'>{val.comments ? val.comments : null}<BiComment/></button>
                                     <button className='text-lg hover:scale-150 duration-700'><FaRetweet/></button>
-                                    <button className='text-lg hover:scale-150 duration-700 flex items-center gap-2'>{val.likes ? val.likes : null}<AiOutlineHeart/></button>
+                                    {val.alreadyliked ? <button className='text-lg text-red-500 hover:scale-150 duration-700 flex items-center gap-2'>{val.likes ? val.likes : null}<AiFillHeart/></button> : <button className='text-lg hover:scale-150 duration-700 flex items-center gap-2'>{val.likes ? val.likes : null}<AiOutlineHeart/></button>}
+                                   
                                     <button className='text-lg hover:scale-150 duration-700'><FiShare/></button>
                                 </div>
                             </div>
