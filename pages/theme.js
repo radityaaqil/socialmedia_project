@@ -24,13 +24,13 @@ const theme = extendTheme({
     },
     shadows:'none'
   },
-  // colorScheme:{
-  //   darkprimary:"#1a1a1d",
-  //   darksecondary:"#4e4e50",
-  //   pinkprimary:"#6f2232",
-  //   pinksecondary:"#950740",
-  //   pinktertiary:"#c3073f",
-  // },
+  colorScheme:{
+    darkprimary:"#1a1a1d",
+    darksecondary:"#4e4e50",
+    pinkprimary:"#6f2232",
+    pinksecondary:"#950740",
+    pinktertiary:"#c3073f",
+  },
 })
 
 export default theme

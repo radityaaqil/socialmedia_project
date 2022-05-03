@@ -105,16 +105,14 @@ export const editProfile = ({ ...values }) => {
   };
 };
 
-export const editProfilePhoto = ({ ...values }) => {
+export const editProfilePhoto = (values) => {
 
   return async (dispatch) => {
     try {
       dispatch({ type: "LOADING" });
       let token = Cookies.get("token")
   
-      let res2 = await axios.patch(`${API_URL}/profile/updateprofile`, {
-          ...values
-      },
+      let res2 = await axios.patch(`${API_URL}/photos/`, values,
       {headers: {
           authorization: `Bearer ${token}`,
       }},)
@@ -141,21 +139,97 @@ export const editProfilePhoto = ({ ...values }) => {
   };
 };
 
-export const postCaption = ({ ...values }) => {
+export const editCoverPhoto = (values) => {
 
   return async (dispatch) => {
     try {
       dispatch({ type: "LOADING" });
       let token = Cookies.get("token")
   
-      let res2 = await axios.post(`${API_URL}/post/postcaption`, {
-          ...values
-      },
+      let res2 = await axios.patch(`${API_URL}/photos/coverphotos`, values,
       {headers: {
           authorization: `Bearer ${token}`,
       }},)
 
-      dispatch({ type: "POST", payload: {...res2.data} });
+      dispatch({ type: "LOGIN", payload: res2.data });
+
+      console.log(res2.data)
+
+      Swal.fire(
+      'Profile successfully changed!',
+      'Yay!',
+      'success'
+      )
+
+    } catch (error) {
+      dispatch({ type: "ERROR", payload: error.response.data.message || "Network Error" });
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: (error.response.data.message || "Network Error"),
+      })
+
+    } finally {
+      dispatch({ type: "DONE" });
+    }
+  };
+};
+
+export const editAllPhotos = ({ formData, formDataCover }) => {
+
+  return async (dispatch) => {
+    try {
+      dispatch({ type: "LOADING" });
+      let token = Cookies.get("token")
+
+      let res2 = await axios.all([
+          axios.patch(`${API_URL}/photos`, formData, {
+              headers: {
+                authorization: `Bearer ${token}`,
+              },
+          }),
+          axios.patch(`${API_URL}/photos/coverphotos`, formDataCover, {
+              headers: {
+                authorization: `Bearer ${token}`,
+              },
+          }) 
+      ])
+
+      console.log(res2)
+
+      for (let i = 0; i < res2.length; i++) {
+        const element = res2[i];
+        dispatch({ type: "LOGIN", payload: element.data});
+      }
+
+      // dispatch({ type: "LOGIN", payload: res2[0].data});
+      // dispatch({ type: "LOGIN", payload: res2[1].data});
+
+      Swal.fire(
+      'Profile successfully changed!',
+      'Yay!',
+      'success'
+      )
+
+    } catch (error) {
+      dispatch({ type: "ERROR", payload: error.response.data.message || "Network Error" });
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: (error.response.data.message || "Network Error"),
+      })
+
+    } finally {
+      dispatch({ type: "DONE" });
+    }
+  };
+};
+
+export const signOutAction = () => {
+
+  return async (dispatch) => {
+    try {
+      dispatch({ type: "LOGOUT" });
 
     } catch (error) {
       dispatch({ type: "ERROR", payload: error.response.data.message || "Network Error" });

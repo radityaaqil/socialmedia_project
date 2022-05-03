@@ -110,7 +110,7 @@ const Feed = ({profile_picture, postEverywhere, data, hasMore, fetchDataOnScroll
                     <Link href={`http://localhost:3000/${val.username}/${val.postID}`}>
                         <div key={index} className='border-b-2 border-darksecondary flex pb-4 pl-6 pt-4 hover:bg-darksecondary duration-700'>
                             <div className='min-w-fit'><a href="">{val.profile_picture ? <img src={`${API_URL}${val.profile_picture}`} alt="" className="object-cover w-14 h-14 rounded-full"/> : <img src={`${API_URL}/photos/defaultcoverimage.png`} alt="" className="object-cover w-14 h-14 rounded-full" />}</a></div>
-                            <div className='text-white flex flex-col pl-6'>
+                            <div className='text-white flex flex-col pl-3 w-10/12'>
                                 <div className='flex space-x-2'>
                                     <div>{val.fullname}</div>
                                     <div>@{val.username}</div>
@@ -124,7 +124,7 @@ const Feed = ({profile_picture, postEverywhere, data, hasMore, fetchDataOnScroll
                                     )
                                 }) : null }</div>
                                 <div className='pt-2 text-lg pr-6'></div>
-                                <div className='pt-4 flex space-x-28'>
+                                <div className='pt-4 flex justify-between'>
                                     <button className='text-lg hover:scale-150 duration-700 flex items-center gap-2'>{val.comments ? val.comments : null}<BiComment/></button>
                                     <button className='text-lg hover:scale-150 duration-700'><FaRetweet/></button>
                                     {val.alreadyliked ? <button className='text-lg text-red-500 hover:scale-150 duration-700 flex items-center gap-2'>{val.likes ? val.likes : null}<AiFillHeart/></button> : <button className='text-lg hover:scale-150 duration-700 flex items-center gap-2'>{val.likes ? val.likes : null}<AiOutlineHeart/></button>}
@@ -132,7 +132,7 @@ const Feed = ({profile_picture, postEverywhere, data, hasMore, fetchDataOnScroll
                                     <button className='text-lg hover:scale-150 duration-700'><FiShare/></button>
                                 </div>
                             </div>
-                            <div className='mr-5'>
+                            <div className='mr-5 w-fit'>
                                 <button className=''><FiMoreHorizontal/></button>
                             </div>
                         </div>
@@ -232,7 +232,37 @@ const Feed = ({profile_picture, postEverywhere, data, hasMore, fetchDataOnScroll
                                     <button className='text-lg bg-pinktertiary rounded-full px-4 py-2 hover:bg-pinksecondary duration-700' type='submit'>Post</button>
                                 </div>
                             </div>
-                    </form>   
+                    </form>
+
+                    <div className='border-b-2 border-darksecondary flex pb-4 pl-6 pt-4 hover:bg-darksecondary duration-700'>
+                            <div className='min-w-fit bg-yellow-400'><img src="" alt="" className="object-cover w-14 h-14 rounded-full"/></div>
+                            <div className='text-white flex flex-col pl-6 bg-green-500 w-10/12'>
+                                <div className='flex space-x-2'>
+                                    <div>Barbara Palvin</div>
+                                    <div>@realbarbarapalvin</div>
+                                    <div>- 23 minutes ago</div>
+                                </div>
+                                <div className='pt-2 text-lg'>heeeeeeyyyyyyyyyy</div>
+                                {/* <div className='pt-2 grid grid-cols-2 gap-2'>{val.photos ? 
+                                val.photos.map((val1, index1)=>{
+                                    return (   
+                                        <div className='' key={index1}><img className='rounded-xl object-cover w-full h-40' src={`${API_URL}${val1.image}`}></img></div>  
+                                    )
+                                }) : null }</div> */}
+                                <div className='pt-2 text-lg pr-6'></div>
+                                <div className='pt-4 flex justify-between'>
+                                    <button className='text-lg hover:scale-150 duration-700 flex items-center gap-2'>3<BiComment/></button>
+                                    <button className='text-lg hover:scale-150 duration-700'><FaRetweet/></button>
+                                    <button className='text-lg text-red-500 hover:scale-150 duration-700 flex items-center gap-2'>3<AiFillHeart/></button>
+                                   
+                                    <button className='text-lg hover:scale-150 duration-700'><FiShare/></button>
+                                </div>
+                            </div>
+                            <div className='mr-5 bg-blue-500 w-fit'>
+                                <button className=''><FiMoreHorizontal/></button>
+                            </div>
+                        </div>
+
                     <InfiniteScroll
                     hasMore={hasMore}
                     next={fetchDataOnScroll}

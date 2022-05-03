@@ -30,9 +30,16 @@ const Postdetail = ({data, username, profile_picture, updatePost, deletePost, ad
 
     const [inputComment, setinputComment] = useState({
         comment:""
-    })
+    });
 
-    console.log(data, "data oi")
+    const [characters, setCharacters] = useState(inputComment.comment.length);
+
+    useEffect(()=>{
+        setCharacters(inputComment.comment.length)
+    },[inputComment])
+
+
+    // console.log(data, "data oi")
 
     const [likesB, setlikesB] = useState(false)
 
@@ -60,6 +67,7 @@ const Postdetail = ({data, username, profile_picture, updatePost, deletePost, ad
 
     const inputCommentHandler = (e) => {
         setinputComment({...inputComment, [e.target.name]:e.target.value});
+        console.log(inputComment.comment.length)
     }
 
     const submitComment = async (e) => {
@@ -68,6 +76,10 @@ const Postdetail = ({data, username, profile_picture, updatePost, deletePost, ad
             comment:inputComment.comment
         };
         try {
+            if(insertinputComment.comment.length > 300){
+                throw "Maximum 300 characters"
+            }
+
             insertComment(insertinputComment);
 
             await Swal.fire(
@@ -82,7 +94,7 @@ const Postdetail = ({data, username, profile_picture, updatePost, deletePost, ad
             await Swal.fire({
                 icon: 'error',
                 title: 'Oops...',
-                text: ("Network Error"),
+                text: (error || "Network Error" ),
             });
         };   
     };
@@ -182,7 +194,7 @@ const Postdetail = ({data, username, profile_picture, updatePost, deletePost, ad
                         <div>@{val.username}</div>
                         <div>- {val.fromnow}</div>
                     </div>
-                    <div className="pt-2">{val.comment}</div>
+                    <div className="pt-2 mr-8">{val.comment}</div>
                 </div>
             )
         })
@@ -202,6 +214,7 @@ const Postdetail = ({data, username, profile_picture, updatePost, deletePost, ad
                     <textarea onChange={inputCommentHandler} value={inputComment.comment} className="resize-none bg-black text-white focus:outline-none pt-1" name="comment" rows="1" cols="50" placeholder="Post your reply..."></textarea>
                     <button onClick={submitComment} className='bg-pinktertiary text-white rounded-full py-2 mr-8 px-3 text-base hover:bg-pinksecondary duration-700'>Reply</button>
                 </div>
+                {inputComment.comment.length <= 300 ? <div className="text-white text-sm">{characters} / 300</div> : <div className="text-red-500 text-sm">{characters} / 300 Maximum limit exceeded</div>}
             </div>
             {renderComment()}
             <Modal size="sm" isOpen={isOpen} onClose={onClose} roundedTop='3xl'>

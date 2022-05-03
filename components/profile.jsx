@@ -16,13 +16,13 @@ import Cookies from "js-cookie";
 import axios from "axios";
 import API_URL from "../helpers/apiurl";
 import Swal from 'sweetalert2';
-import { editProfile } from "../redux/actions/userActions";
+import { editProfile, editAllPhotos, editCoverPhoto, editProfilePhoto } from "../redux/actions/userActions";
 import { connect } from "react-redux";
 import { useRouter } from "next/router";
 import * as Yup from "yup";
 import React, { useState } from "react";
 import { FaRetweet } from 'react-icons/fa'
-import { BiComment } from "react-icons/bi";
+import { BiComment, BiPhotoAlbum, BiDetail } from "react-icons/bi";
 import { AiOutlineHeart } from "react-icons/ai";
 import { AiFillHeart } from "react-icons/ai";
 import { FiShare} from "react-icons/fi";
@@ -30,11 +30,13 @@ import { FiMoreHorizontal} from "react-icons/fi";
 import moment from "moment";
 import Link from "next/link";
 
-const Profile = ({editProfile, username, fullname, bio, profile_picture, cover_picture, location, posts, userPosts, counts, createdAt, userCommentsData, userComments, media, userPostMedia, userLikedPosts, likedPosts}) => {
+const Profile = ({editProfile, editAllPhotos, username, fullname, bio, profile_picture, cover_picture, location, posts, userPosts, counts, createdAt, userCommentsData, userComments, media, userPostMedia, userLikedPosts, likedPosts}) => {
     
     const router = useRouter()
 
     const { isOpen, onOpen, onClose } = useDisclosure()
+
+    const { isOpen : isOpenPhoto, onOpen : onOpenPhoto, onClose : onClosePhoto } = useDisclosure()
 
     const [selectedCoverImage, setselectedCoverImage] = useState({
         file:[],
@@ -59,7 +61,7 @@ const Profile = ({editProfile, username, fullname, bio, profile_picture, cover_p
         },
 
         validationSchema : Yup.object({
-            fullname : Yup.string().min(8, "Name can't be blank").required("Name can't be blank"),
+            fullname : Yup.string().min(8, "Name can't be blank").max(45, "Name exceeds limit").required("Name can't be blank"),
             username : Yup.string().min(8, "Minimum 8 characters")
         }),
 
@@ -127,31 +129,37 @@ const Profile = ({editProfile, username, fullname, bio, profile_picture, cover_p
 
     const submitPhoto = async () => {
         try {
-            let token = Cookies.get("token");
+            // let token = Cookies.get("token");
             let formData = new FormData();
             formData.append("profile_picture", selectedImage.file);
             
             let formDataCover = new FormData();
             formDataCover.append("cover_picture", selectedCoverImage.file);
            
-            await axios.all([
-                axios.patch(`${API_URL}/photos`, formData, {
-                    headers: {
-                      authorization: `Bearer ${token}`,
-                    },
-                }),
-                axios.patch(`${API_URL}/photos/coverphotos`, formDataCover, {
-                    headers: {
-                      authorization: `Bearer ${token}`,
-                    },
-                }) 
-            ])
+            // await axios.all([
+            //     axios.patch(`${API_URL}/photos`, formData, {
+            //         headers: {
+            //           authorization: `Bearer ${token}`,
+            //         },
+            //     }),
+            //     axios.patch(`${API_URL}/photos/coverphotos`, formDataCover, {
+            //         headers: {
+            //           authorization: `Bearer ${token}`,
+            //         },
+            //     }) 
+            // ])
 
-            onClose()
+            await editAllPhotos({formData, formDataCover});
+
+            // await editProfilePhoto(formData);
+
+            // await editCoverPhoto(formDataCover);
+
+            onClosePhoto()
             
             await Swal.fire(
             'Successfully changed pictures!',
-            'Welcome back!',
+            'YAY!',
             'success'
             )
 
@@ -164,9 +172,9 @@ const Profile = ({editProfile, username, fullname, bio, profile_picture, cover_p
         return posts.map((val, index) => {
             return(
                 <Link href={`http://localhost:3000/${val.username}/${val.postID}`}>
-                    <div key={index} className='border-b-2 border-darksecondary flex pb-4 space-x-2 pt-4 hover:bg-darksecondary duration-700'>
+                    <div key={index} className='border-b-2 border-darksecondary flex pb-4 pt-4 hover:bg-darksecondary duration-700'>
                         <div className="min-w-fit"><a href="">{val.profile_picture ? <img src={`${API_URL}${val.profile_picture}`} alt="" className="object-cover w-14 h-14 rounded-full"/> : <img src={`${API_URL}/photos/defaultcoverimage.png`} alt="" className="object-cover w-14 h-14 rounded-full" />}</a></div>
-                        <div className='text-white flex flex-col'>
+                        <div className='text-white flex flex-col pl-3 w-10/12'>
                             <div className='flex space-x-2'>
                                 <div>{val.fullname}</div>
                                 <div>@{val.username}</div>
@@ -180,14 +188,14 @@ const Profile = ({editProfile, username, fullname, bio, profile_picture, cover_p
                                     )
                                 }) : null }</div>
                             <div className='pt-2 text-lg pr-6'></div>
-                            <div className='pt-4 flex space-x-28'>
+                            <div className='pt-4 flex justify-between'>
                                 <button className='text-lg hover:scale-150 duration-700 flex items-center gap-2'>{val.comments ? val.comments : null}<BiComment/></button>
                                 <button className='text-lg hover:scale-150 duration-700'><FaRetweet/></button>
                                 {val.alreadyliked ? <button className='text-lg text-red-500 hover:scale-150 duration-700 flex items-center gap-2'>{val.likes ? val.likes : null}<AiFillHeart/></button> : <button className='text-lg hover:scale-150 duration-700 flex items-center gap-2'>{val.likes ? val.likes : null}<AiOutlineHeart/></button>}
                                 <button className='text-lg hover:scale-150 duration-700'><FiShare/></button>
                             </div>
                         </div>
-                        <div className='mr-5'>
+                        <div className='mr-5 w-fit'>
                                 <button className=''><FiMoreHorizontal/></button>
                         </div>
                     </div>
@@ -200,9 +208,9 @@ const Profile = ({editProfile, username, fullname, bio, profile_picture, cover_p
         return media.map((val, index) => {
             return(
                 <Link href={`http://localhost:3000/${val.username}/${val.postID}`}>
-                    <div key={index} className='border-b-2 border-darksecondary flex pb-4 space-x-2 pt-4 hover:bg-darksecondary duration-700'>
+                    <div key={index} className='border-b-2 border-darksecondary flex pb-4 pt-4 hover:bg-darksecondary duration-700'>
                         <div className="min-w-fit"><a href="">{val.profile_picture ? <img src={`${API_URL}${val.profile_picture}`} alt="" className="object-cover w-14 h-14 rounded-full"/> : <img src={`${API_URL}/photos/defaultcoverimage.png`} alt="" className="object-cover w-14 h-14 rounded-full" />}</a></div>
-                        <div className='text-white flex flex-col'>
+                        <div className='text-white flex flex-col w-10/12 pl-3'>
                             <div className='flex space-x-2'>
                                 <div>{val.fullname}</div>
                                 <div>@{val.username}</div>
@@ -216,14 +224,14 @@ const Profile = ({editProfile, username, fullname, bio, profile_picture, cover_p
                                     )
                                 }) : null }</div>
                             <div className='pt-2 text-lg pr-6'></div>
-                            <div className='pt-4 flex space-x-28'>
+                            <div className='pt-4 flex justify-between'>
                                 <button className='text-lg hover:scale-150 duration-700 flex items-center gap-2'>{val.comments ? val.comments : null}<BiComment/></button>
                                 <button className='text-lg hover:scale-150 duration-700'><FaRetweet/></button>
                                 {val.alreadyliked ? <button className='text-lg text-red-500 hover:scale-150 duration-700 flex items-center gap-2'>{val.likes ? val.likes : null}<AiFillHeart/></button> : <button className='text-lg hover:scale-150 duration-700 flex items-center gap-2'>{val.likes ? val.likes : null}<AiOutlineHeart/></button>}
                                 <button className='text-lg hover:scale-150 duration-700'><FiShare/></button>
                             </div>
                         </div>
-                        <div className='mr-5'>
+                        <div className='mr-5 w-fit'>
                                 <button className=''><FiMoreHorizontal/></button>
                         </div>
                     </div>
@@ -235,13 +243,13 @@ const Profile = ({editProfile, username, fullname, bio, profile_picture, cover_p
     const renderUserComments = () => {
         return userCommentsData.map((val, index) => {
             return (
-                <div key={index} className="py-4 pl-8 border-b-2 border-darksecondary">
-                    <div className="flex gap-3 items-center">
+                <div key={index} className="py-4 border-b-2 border-darksecondary">
+                    <div className="flex gap-3 items-center w-10/12">
                         <img className="object-cover w-10 h-10 rounded-full" src={`${API_URL}${val.profile_picture}`} alt="" />
                         <div>@{val.username}</div>
                         <div>- {val.fromnow}</div>
                     </div>
-                    <div className="pt-2">{val.comment}</div>
+                    <div className="pt-2 min-w-fit">{val.comment}</div>
                 </div>
             )
         })
@@ -252,9 +260,9 @@ const Profile = ({editProfile, username, fullname, bio, profile_picture, cover_p
             return(
                
                     <Link href={`http://localhost:3000/${val.username}/${val.postID}`}>
-                        <div key={index} className='border-b-2 border-darksecondary flex pb-4 pl-6 pt-4 hover:bg-darksecondary duration-700'>
+                        <div key={index} className='border-b-2 border-darksecondary flex pb-4 pt-4 hover:bg-darksecondary duration-700'>
                             <div className='min-w-fit'><a href="">{val.profile_picture ? <img src={`${API_URL}${val.profile_picture}`} alt="" className="object-cover w-14 h-14 rounded-full"/> : <img src={`${API_URL}/photos/defaultcoverimage.png`} alt="" className="object-cover w-14 h-14 rounded-full" />}</a></div>
-                            <div className='text-white flex flex-col pl-6'>
+                            <div className='text-white flex flex-col w-10/12 pl-3'>
                                 <div className='flex space-x-2'>
                                     <div>{val.fullname}</div>
                                     <div>@{val.username}</div>
@@ -268,7 +276,7 @@ const Profile = ({editProfile, username, fullname, bio, profile_picture, cover_p
                                     )
                                 }) : null }</div>
                                 <div className='pt-2 text-lg pr-6'></div>
-                                <div className='pt-4 flex space-x-28'>
+                                <div className='pt-4 flex justify-between'>
                                     <button className='text-lg hover:scale-150 duration-700 flex items-center gap-2'>{val.comments ? val.comments : null}<BiComment/></button>
                                     <button className='text-lg hover:scale-150 duration-700'><FaRetweet/></button>
                                     {val.alreadyliked ? <button className='text-lg text-red-500 hover:scale-150 duration-700 flex items-center gap-2'>{val.likes ? val.likes : null}<AiFillHeart/></button> : <button className='text-lg hover:scale-150 duration-700 flex items-center gap-2'>{val.likes ? val.likes : null}<AiOutlineHeart/></button>}
@@ -276,7 +284,7 @@ const Profile = ({editProfile, username, fullname, bio, profile_picture, cover_p
                                     <button className='text-lg hover:scale-150 duration-700'><FiShare/></button>
                                 </div>
                             </div>
-                            <div className='mr-5'>
+                            <div className='mr-5 w-fit'>
                                 <button className=''><FiMoreHorizontal/></button>
                             </div>
                         </div>
@@ -306,7 +314,9 @@ const Profile = ({editProfile, username, fullname, bio, profile_picture, cover_p
                     
                 </div>
 
-                <button onClick={onOpen} className="absolute -bottom-14 right-5 border-2 py-2 px-3 rounded-full hover:bg-darksecondary duration-700">Edit Profile</button>
+                <button onClick={onOpenPhoto} className="absolute -bottom-14 right-16 py-2 px-2 hover:scale-125 duration-700 text-3xl"><BiPhotoAlbum/></button>
+
+                <button onClick={onOpen} className="absolute -bottom-14 right-5 py-2 px-2 hover:scale-125 duration-700 text-3xl"><BiDetail/></button>
             </div>
 
             <div className="mt-20 pl-6">
@@ -337,12 +347,14 @@ const Profile = ({editProfile, username, fullname, bio, profile_picture, cover_p
                 </div>
             </div> */}
 
-            <Tabs className="pt-6" isFitted variant='solid-rounded' colorScheme='pinktertiary'>
+            {/* Tabs for tweet */}
+
+            <Tabs className="pt-6" isFitted variant='unstyled' size="lg">
                 <TabList>
-                    <Tab onClick={TogglePost}>Post</Tab>
-                    <Tab onClick={ToggleComment}>Comments</Tab>
-                    <Tab onClick={ToggleMedia}>Media</Tab>
-                    <Tab onClick={ToggleLikedPosts}>Likes</Tab>
+                    <Tab _selected={{ color: 'white', bg: 'pinktertiary.500' }} _hover={{ color: 'white', bg: 'pinktertiary.500' }} onClick={TogglePost}>Post</Tab>
+                    <Tab _selected={{ color: 'white', bg: 'pinktertiary.500' }} _hover={{ color: 'white', bg: 'pinktertiary.500' }} onClick={ToggleComment}>Comments</Tab>
+                    <Tab _selected={{ color: 'white', bg: 'pinktertiary.500' }} _hover={{ color: 'white', bg: 'pinktertiary.500' }} onClick={ToggleMedia}>Media</Tab>
+                    <Tab _selected={{ color: 'white', bg: 'pinktertiary.500' }} _hover={{ color: 'white', bg: 'pinktertiary.500' }} onClick={ToggleLikedPosts}>Likes</Tab>
                 </TabList>
                 <TabPanels>
                     <TabPanel>
@@ -360,7 +372,54 @@ const Profile = ({editProfile, username, fullname, bio, profile_picture, cover_p
                 </TabPanels>
             </Tabs>
 
-           
+            {/* Edit profile photos */}
+
+            <Modal size="lg" isOpen={isOpenPhoto} onClose={onClosePhoto} color='black'>
+                <ModalOverlay />
+                    
+                    <ModalContent> 
+                        <ModalHeader className='bg-darkprimary text-white backdrop-blur-lg flex font-thin items-center w-full gap-4 text-lg'>
+                            <button onClick={onClosePhoto} type="button" className="w-1/6 rounded-full"><div className="hover:bg-darksecondary w-fit p-2 rounded-full text-2xl duration-700"><IoClose/></div></button>
+                            <div className="w-4/6 text-left font-thin">Edit Photos</div>
+                            <button onClick={submitPhoto} className="w-1/4 grid justify-center"><div className="bg-pinktertiary w-fit py-1 px-3 hover:bg-pinksecondary duration-700 rounded-full">Save</div></button>    
+                        </ModalHeader>
+                    
+                    <ModalBody className='flex flex-col gap-2 bg-darkprimary'>
+                        <div className="pb-12">
+                            <div className="relative">
+
+                                {cover_picture && selectedCoverImage.filePreview ? <img src={selectedCoverImage.filePreview} alt="" className="object-cover w-full h-48"/> : null}
+
+                                {!cover_picture && selectedCoverImage.filePreview ? <img src={selectedCoverImage.filePreview} alt="" className="object-cover w-full h-48"/> : null}
+
+                                {cover_picture && !selectedCoverImage.filePreview ? <img src={`${API_URL}${cover_picture}`} alt="" className="object-cover w-full h-48"/> : null}
+
+                                {!cover_picture && !selectedCoverImage.filePreview ? <img src={`${API_URL}/photos/defaultcoverimage.png`} alt="" className="object-cover w-full h-48"/> : null}
+
+                                <div className="absolute -bottom-8 left-6">
+
+                                    {profile_picture && selectedImage.filePreview ? <img src={selectedImage.filePreview} alt="" className="object-cover w-28 h-28 ring-4 rounded-full ring-darkprimary"/> : null}
+
+                                    {!profile_picture && selectedImage.filePreview ? <img src={selectedImage.filePreview} alt="" className="object-cover w-28 h-28 ring-4 rounded-full ring-darkprimary"/> : null}
+
+                                    {profile_picture && !selectedImage.filePreview ? <img src={`${API_URL}${profile_picture}`} alt="" className="object-cover w-28 h-28 ring-4 rounded-full ring-darkprimary"/> : null}
+
+                                    {!profile_picture && !selectedImage.filePreview ? <img src={`${API_URL}/photos/defaultcoverimage.png`} alt="" className="object-cover w-28 h-28 ring-4 rounded-full ring-darkprimary"/> : null}
+                                    
+                                </div>
+                                <input className='hidden' type="file" id='coverPic' onChange={onFileChangeCover}/>
+                                <input className='hidden' type="file" id='profilePic' onChange={onFileChange}/>
+                                <button type="button" onClick={deletePhoto} className="absolute left-64 top-20 text-3xl bg-darkprimary hover:bg-darksecondary duration-700 rounded-full p-2 bg-opacity-60 text-white"><IoClose/></button>
+                                <label for="coverPic" type="button" className="absolute left-40 top-20 text-3xl bg-darkprimary hover:bg-darksecondary hover:cursor-pointer duration-700 rounded-full p-2 bg-opacity-60 text-white"><IoAddCircleOutline/></label>
+                                <label for="profilePic" type="button" className="absolute left-24 top-48 text-3xl bg-darkprimary hover:bg-darksecondary hover:cursor-pointer duration-700 rounded-full p-1 bg-opacity-60 text-white"><IoAddCircleOutline/></label>
+
+                                {/* <button type="button" className="text-white absolute -bottom-10 right-4 border-2 py-1 px-2 rounded-full hover:bg-darksecondary duration-700" onClick={submitPhoto}>Confirm photos</button> */}
+                            </div>
+                        </div>
+                    
+                    </ModalBody>  
+                    </ModalContent>
+            </Modal> 
 
             {/* Edit Profile Modal */}
 
@@ -370,12 +429,12 @@ const Profile = ({editProfile, username, fullname, bio, profile_picture, cover_p
                         <ModalContent> 
                             <ModalHeader className='bg-darkprimary text-white backdrop-blur-lg flex font-thin items-center w-full gap-4 text-lg'>
                                 <button onClick={onClose} type="button" className="w-1/6 rounded-full"><div className="hover:bg-darksecondary w-fit p-2 rounded-full text-2xl duration-700"><IoClose/></div></button>
-                                <div className="w-4/6 text-left font-thin">Edit Profile</div>
+                                <div className="w-4/6 text-left font-thin">Edit Details</div>
                                 <button type="submit" className="w-1/4 grid justify-center"><div className="bg-pinktertiary w-fit py-1 px-3 hover:bg-pinksecondary duration-700 rounded-full">Save</div></button>    
                             </ModalHeader>
                         
                         <ModalBody className='flex flex-col gap-2 bg-darkprimary'>
-                            <div className="pb-4">
+                            {/* <div className="pb-4">
                                 <div className="relative">
 
                                     {cover_picture && selectedCoverImage.filePreview ? <img src={selectedCoverImage.filePreview} alt="" className="object-cover w-full h-48"/> : null}
@@ -386,13 +445,7 @@ const Profile = ({editProfile, username, fullname, bio, profile_picture, cover_p
 
                                     {!cover_picture && !selectedCoverImage.filePreview ? <img src={`${API_URL}/photos/defaultcoverimage.png`} alt="" className="object-cover w-full h-48"/> : null}
 
-                                    {/* {cover_picture ? <img src={`${API_URL}${cover_picture}`} alt="" className="object-cover w-full h-48"/> : <img src={`${API_URL}/photos/defaultcoverimage.png`} alt="" className="object-cover w-full h-48"/>}
-
-                                    {selectedCoverImage && (<img src={URL.createObjectURL(selectedCoverImage)} alt="" className="object-cover w-full h-48 z-99"/>)} */}
-
                                     <div className="absolute -bottom-8 left-6">
-{/* 
-                                        {selectedImage.filePreview && <img src={selectedImage.filePreview} alt="" className="object-cover w-28 h-28 ring-4 rounded-full ring-darkprimary"/>} */}
 
                                         {profile_picture && selectedImage.filePreview ? <img src={selectedImage.filePreview} alt="" className="object-cover w-28 h-28 ring-4 rounded-full ring-darkprimary"/> : null}
 
@@ -411,8 +464,8 @@ const Profile = ({editProfile, username, fullname, bio, profile_picture, cover_p
 
                                     <button type="button" className="text-white absolute -bottom-10 right-4 border-2 py-1 px-2 rounded-full hover:bg-darksecondary duration-700" onClick={submitPhoto}>Confirm photos</button>
                                 </div>
-                            </div>
-                            <div className="text-white mt-12 p-2 w-full border-2 border-darksecondary rounded-xl">
+                            </div> */}
+                            <div className="text-white p-2 w-full border-2 border-darksecondary rounded-xl">
                                 <div className="text-base">Fullname</div>
                                 <input className="w-full text-white focus:outline-none bg-darkprimary text-xl font-bold tracking-wider" type="text" name="fullname"
                                     onChange={formik.handleChange}
@@ -446,7 +499,7 @@ const Profile = ({editProfile, username, fullname, bio, profile_picture, cover_p
                                     onBlur={formik.handleBlur} 
                                     value={formik.values.location}/>
                             </div>
-                        
+
                         </ModalBody>  
                         </ModalContent>
                     </form>
@@ -456,4 +509,4 @@ const Profile = ({editProfile, username, fullname, bio, profile_picture, cover_p
     );
 }
  
-export default connect(null, { editProfile })(Profile);
+export default connect(null, { editProfile, editAllPhotos })(Profile);

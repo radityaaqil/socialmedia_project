@@ -1,5 +1,4 @@
 import { BiHomeCircle } from "react-icons/bi";
-import { Avatar } from '@chakra-ui/react'
 import { IoNotificationsOutline, IoClose  } from "react-icons/io5";
 import { IoAddCircleOutline } from "react-icons/io5";
 import { BsEnvelope } from "react-icons/bs";
@@ -14,6 +13,7 @@ import {
     ModalHeader,
     ModalFooter,
     ModalBody,
+    Button,
 } from '@chakra-ui/react'
 import { useDisclosure } from '@chakra-ui/react'
 import Link from 'next/link';
@@ -22,14 +22,33 @@ import API_URL from '../helpers/apiurl';
 import axios from 'axios'
 import { useFormik } from "formik";
 import Swal from 'sweetalert2';
+import {
+    Menu,
+    MenuButton,
+    MenuList,
+    MenuItem,
+} from '@chakra-ui/react'
+import { useRouter } from "next/router";
+import Cookies from 'js-cookie';
+import { useDispatch } from "react-redux";
 
 const LeftNavBar = ({username, fullname, profile_picture, postEverywhere}) => {
+
+    const dispatch = useDispatch();
     
     const { isOpen, onOpen, onClose} = useDisclosure()
 
     const [input, setInput] = useState({
         caption:"",
     })
+
+    const router = useRouter()
+
+    const signOut = () => {
+        Cookies.remove("token");
+        dispatch({ type : "LOGOUT" })
+        router.push('/')
+    }
 
     const [selectedImage, setselectedImage] = useState([]);
 
@@ -116,10 +135,15 @@ const LeftNavBar = ({username, fullname, profile_picture, postEverywhere}) => {
                     <IoAddCircleOutline/>
                 </button>
 
-                <div className='pt-10'>
-                    <div className='flex items-center space-x-3 hover:bg-darksecondary rounded-full duration-700 py-2 px-3 cursor-pointer'>
+                <div className="pt-10">
+                <Menu autoSelect={false}>
+                    {({ isOpen }) => (
+                        <>
+                        <MenuButton 
+                        isActive={isOpen} as={Button} variant="unstyled" height="70px" borderRadius="50px" colorScheme="black" _hover={{ bg: 'darksecondary' }}>
+                            {isOpen ? <div className=''>
+                    <div className='flex items-center space-x-3 hover:bg-darksecondary rounded-full duration-700 px-3 cursor-pointer tracking-wide'>
                         <a href="">
-                            {/* <Avatar size='md' bg='pink.500'/> */}
                             {profile_picture ? <img src={`${API_URL}${profile_picture}`} alt="" className="object-cover w-14 h-14 rounded-full" /> : <img src={`${API_URL}/photos/defaultcoverimage.png`} alt="" className="object-cover w-14 h-14 rounded-full" />}
                         </a>
                         <div className='flex flex-col text-base'>
@@ -128,8 +152,29 @@ const LeftNavBar = ({username, fullname, profile_picture, postEverywhere}) => {
                         </div>
                         <button className='text-base p-2'><FiMoreHorizontal/></button>
                     </div> 
+                </div> : <div className=''>
+                    <div className='flex items-center space-x-3 hover:bg-darksecondary rounded-full duration-700 px-3 cursor-pointer tracking-wide'>
+                        <a href="">
+                            {profile_picture ? <img src={`${API_URL}${profile_picture}`} alt="" className="object-cover w-14 h-14 rounded-full" /> : <img src={`${API_URL}/photos/defaultcoverimage.png`} alt="" className="object-cover w-14 h-14 rounded-full" />}
+                        </a>
+                        <div className='flex flex-col text-base'>
+                            <div className='font-bold'>{fullname}</div>
+                            <div className='text-sm'>@{username}</div>
+                        </div>
+                        <button className='text-base p-2'><FiMoreHorizontal/></button>
+                    </div> 
+                </div>}
+                        </MenuButton>
+                        <MenuList background="darkprimary" border='0px'>
+                            <MenuItem bg="darkprimary" fontSize='25px' _hover={{ bg:"darksecondary"}} onClick={() => signOut()}>Sign out</MenuItem>
+                        </MenuList>
+                        </>
+                )}
+                </Menu>
                 </div>
+                
 
+                
             </div>
 
             <Modal size="sm" isOpen={isOpen} onClose={onClose} roundedTop='3xl'>
@@ -168,6 +213,6 @@ const LeftNavBar = ({username, fullname, profile_picture, postEverywhere}) => {
             </Modal>
         </div>
     )
-}
+};
 
-export default LeftNavBar
+export default LeftNavBar;
