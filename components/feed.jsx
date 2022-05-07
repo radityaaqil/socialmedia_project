@@ -11,8 +11,9 @@ import { IoClose } from "react-icons/io5";
 import Swal from 'sweetalert2';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import axios from 'axios';
+import { AiOutlinePicture } from "react-icons/ai";
 
-const Feed = ({profile_picture, postEverywhere, data, hasMore, fetchDataOnScroll}) => {
+const Feed = ({profile_picture, postEverywhere, data, hasMore, fetchDataOnScroll, isVerified}) => {
     
     const [input, setInput] = useState({
         caption:"",
@@ -29,7 +30,21 @@ const Feed = ({profile_picture, postEverywhere, data, hasMore, fetchDataOnScroll
    
             setselectedImage([...selectedImage,e.target.files[0]]) 
         }
-    }
+    };
+
+    //Maximum photos and characters
+
+    const [selectedImageCounts, setImageCounts] = useState(selectedImage.length);
+
+    useEffect(()=>{
+        setImageCounts(selectedImage.length)
+    },[selectedImage])
+
+    const [characters, setCharacters] = useState(input.caption.length);
+
+    useEffect(()=>{
+        setCharacters(input.caption.length)
+    },[input.caption]);
 
   
     console.log(selectedImage, "selected image")
@@ -53,11 +68,15 @@ const Feed = ({profile_picture, postEverywhere, data, hasMore, fetchDataOnScroll
         formData.append("data", JSON.stringify(insertData));
  
         try {
-            if(selectedImage.length>4){
-                throw { message : "Maximum 4 photos on a single upload"}
+            if(selectedImage.length>4 && input.caption.length>300){
+                throw 'Post limit exceeded'
+            }else if(input.caption.length>300){
+                throw "Maximum 300 characters"
+            }else if(selectedImage.length>4){
+                throw 'Maximum 4 photos'
             }
 
-            await postEverywhere(formData)
+            await postEverywhere(formData);
 
             setInput({...input, caption:""})
 
@@ -69,11 +88,14 @@ const Feed = ({profile_picture, postEverywhere, data, hasMore, fetchDataOnScroll
             console.log(formData)
             
         } catch (error) {
-            // await Swal.fire({
-            // icon: 'error',
-            // title: 'Oops...',
-            // text: (error.response.data.message || "Network Error"),
-            // })
+            await Swal.fire({
+            icon: 'error',
+            color: '#f44336',
+            iconColor: '#f44336',
+            background: '#1a1a1d',
+            title: 'Oops...',
+            text: (error || "Network Error"),
+            })
         }
         console.log(formData)
     };  
@@ -151,12 +173,17 @@ const Feed = ({profile_picture, postEverywhere, data, hasMore, fetchDataOnScroll
 
                 <div className='mt-20'>
                     <form onSubmit={submitPost} className='border-b-2 border-darksecondary flex pb-4 pl-6 order-first'>
-                            <div className='hover:cursor-pointer'><Link href="/userprofile">{profile_picture ? <img src={`${API_URL}${profile_picture}`} alt="" className="object-cover w-14 h-14 rounded-full"/> : <img src={`${API_URL}/photos/defaultcoverimage.png`} alt="" className="object-cover w-14 h-14 rounded-full" />}</Link></div>
-                            <div className='text-white pl-6'>
-                                <div className='text-lg'><textarea onChange={inputPostHandler} 
-                                        value={input.caption} className='w-full bg-black resize-none p-2 focus:outline-none overflow-hidden' name="caption" cols="30" rows="4" placeholder="What's happening?"></textarea></div>
+                            <div className='hover:cursor-pointer min-w-fit'><Link href="/userprofile">{profile_picture ? <img src={`${API_URL}${profile_picture}`} alt="" className="object-cover w-14 h-14 rounded-full"/> : <img src={`${API_URL}/photos/defaultcoverimage.png`} alt="" className="object-cover w-14 h-14 rounded-full" />}</Link></div>
+                            <div className='text-white pl-3 w-11/12'>
+                                <div className='text-lg mr-5'><textarea onChange={inputPostHandler} value={input.caption} className='w-full bg-black resize-none p-2 focus:outline-none overflow-hidden' name="caption" cols="30" rows="4" placeholder="What's happening?"></textarea></div>
                                 
-                                <div className='mr-5 grid grid-cols-4 gap-2'>
+                                {input.caption.length === 0 ? null : null}
+
+                                {input.caption.length > 0 && input.caption.length <= 300? <div className="text-white text-sm text-right mr-5">{characters} / 300</div> : null}
+
+                                {input.caption.length > 300 ? <div className="text-red-500 text-sm text-right mr-5">{characters} / 300 characters limit exceeded</div> : null}
+
+                                <div className='mr-5 grid grid-cols-4 gap-2 pt-2'>
                                     {selectedImage.map((val, index) => {
                                         
                                         return  (
@@ -225,17 +252,26 @@ const Feed = ({profile_picture, postEverywhere, data, hasMore, fetchDataOnScroll
 
                                 </div>
                                 
+                                {selectedImage.length == 0 ? null : null}
 
-                                <div className='pt-2 space-x-52'>
-                                    <label for="pic" className='text-lg bg-pinktertiary rounded-full px-4 py-2 hover:bg-pinksecondary duration-700 disabled:bg-slate-500 hover:cursor-pointer'>Add Photos</label>
-                                    <input className='hidden' type="file" id='pic' name='image' onChange={onFileChange}/>
-                                    <button className='text-lg bg-pinktertiary rounded-full px-4 py-2 hover:bg-pinksecondary duration-700' type='submit'>Post</button>
+                                {selectedImage.length > 0 && selectedImage.length <= 4 ? <div className="text-white text-sm pt-2 text-right mr-5">{selectedImageCounts} / 4 photos</div> : null}
+
+                                {selectedImage.length > 4 ? <div className="text-red-500 text-sm pt-2 text-right mr-5">{selectedImageCounts} / 4 limit exceeded</div> : null}
+
+                                <div className='pt-2 flex justify-between items-center'>
+                                    {isVerified == 0 ? <label for="pic" className='text-xl bg-darksecondary rounded-full p-4'><AiOutlinePicture/></label> : <label for="pic" className='text-xl bg-pinktertiary rounded-full p-4 hover:bg-pinksecondary duration-700 disabled:bg-slate-500 hover:cursor-pointer'><AiOutlinePicture/></label>}
+                                    
+                                    {isVerified == 0 ? <input disabled className='hidden' type="file" id='pic' name='image' onChange={onFileChange}/> : <input className='hidden' type="file" id='pic' name='image' onChange={onFileChange}/>}
+                                    
+                                    {isVerified == 0 ? <button disabled className='text-lg bg-darksecondary rounded-full px-4 py-2 mr-5' type='submit'>Post</button> : <button className='text-lg bg-pinktertiary rounded-full px-4 py-2 hover:bg-pinksecondary duration-700 mr-5' type='submit'>Post</button>}
+                                    
                                 </div>
                             </div>
                     </form>
-
-                    <div className='border-b-2 border-darksecondary flex pb-4 pl-6 pt-4 hover:bg-darksecondary duration-700'>
-                            <div className='min-w-fit bg-yellow-400'><img src="" alt="" className="object-cover w-14 h-14 rounded-full"/></div>
+                    
+                    {/* Dummy Feed Template */}
+                    {/* <div className='border-b-2 border-darksecondary flex pb-4 pl-6 pt-4 hover:bg-darksecondary duration-700'>
+                        <div className='min-w-fit bg-yellow-400'><img src="" alt="" className="object-cover w-14 h-14 rounded-full"/></div>
                             <div className='text-white flex flex-col pl-6 bg-green-500 w-10/12'>
                                 <div className='flex space-x-2'>
                                     <div>Barbara Palvin</div>
@@ -243,12 +279,6 @@ const Feed = ({profile_picture, postEverywhere, data, hasMore, fetchDataOnScroll
                                     <div>- 23 minutes ago</div>
                                 </div>
                                 <div className='pt-2 text-lg'>heeeeeeyyyyyyyyyy</div>
-                                {/* <div className='pt-2 grid grid-cols-2 gap-2'>{val.photos ? 
-                                val.photos.map((val1, index1)=>{
-                                    return (   
-                                        <div className='' key={index1}><img className='rounded-xl object-cover w-full h-40' src={`${API_URL}${val1.image}`}></img></div>  
-                                    )
-                                }) : null }</div> */}
                                 <div className='pt-2 text-lg pr-6'></div>
                                 <div className='pt-4 flex justify-between'>
                                     <button className='text-lg hover:scale-150 duration-700 flex items-center gap-2'>3<BiComment/></button>
@@ -261,7 +291,7 @@ const Feed = ({profile_picture, postEverywhere, data, hasMore, fetchDataOnScroll
                             <div className='mr-5 bg-blue-500 w-fit'>
                                 <button className=''><FiMoreHorizontal/></button>
                             </div>
-                        </div>
+                        </div> */}
 
                     <InfiniteScroll
                     hasMore={hasMore}

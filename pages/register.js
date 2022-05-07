@@ -32,7 +32,7 @@ const Register = ({ registerAction }) => {
 
         validationSchema : Yup.object({
             email : Yup.string().email("Invalid email format").required("Required"),
-            username : Yup.string().max(15, "Must contain 15 characters or less").required("Required").matches(/^\S*$/, "Should not contain spaces"), 
+            username : Yup.string().max(25, "Must contain 25 characters or less").required("Required").matches(/^\S*$/, "Should not contain spaces"), 
             password : Yup.string().min(8, "Must contain 8 characters or more").matches(/[A-Z]/g, "Should contain at least an uppercase letter").matches(/[a-z]/g, "Should contain at least a lowercase letter").matches(/[0-9]/g, "Should contain at least a number letter").matches(/[-._!"`'#%&,:;<>=@{}~\$\(\)\*\+\/\\\?\[\]\^\|]+/g, "Should contain at least a special character").matches(/^\S*$/, "Should not contain spaces"),
             confirmPassword : Yup.string().oneOf([Yup.ref('password'), null], 'Passwords must match'),
         }),
@@ -78,7 +78,7 @@ const Register = ({ registerAction }) => {
                     <form className='text-pinktertiary font-bold text-lg mx-16' onSubmit={formik.handleSubmit}>
                         <div className='flex flex-col'>
                             <input 
-                            className=" bg-black border-2 rounded-full border-white focus:outline-none text-white p-2 w-70 placeholder-pinktertiary" 
+                            className=" bg-black autofill:shadow-fill-black autofill:text-fill-white border-2 rounded-full border-white focus:outline-none text-white p-2 w-70 placeholder-pinktertiary" 
                             placeholder="Email" 
                             name="email" 
                             type="email"
@@ -92,7 +92,7 @@ const Register = ({ registerAction }) => {
 
                         <div className='flex flex-col pt-5'>
                             <input 
-                            className=" bg-black border-2 rounded-full border-white focus:outline-none text-white p-2 placeholder-pinktertiary" 
+                            className=" bg-black autofill:shadow-fill-black autofill:text-fill-white border-2 rounded-full border-white focus:outline-none text-white p-2 placeholder-pinktertiary" 
                             placeholder="Username" 
                             name="username" 
                             type="text" 
@@ -141,7 +141,8 @@ const Register = ({ registerAction }) => {
                                 <input 
                                     type="checkbox" 
                                     name="terms" 
-                                    required/>
+                                    required
+                                    className="accent-pinktertiary"/>
                                 </div>
                             <div><a href="" className="text-pinktertiary">I agree to the terms and conditions</a></div>
                         </div>

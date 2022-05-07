@@ -18,7 +18,7 @@ const Post = () => {
 
     const { username, fullname, profile_picture, isVerified } = useUser()
 
-    const [data, setState] = useState([]);
+    const [data, setData] = useState([]);
 
     const[commentsData, setcommentsData] = useState([])
 
@@ -28,7 +28,7 @@ const Post = () => {
         let res = await axios.get(`${API_URL}/post/getuserpostdetail/${postID}`, {headers: {
             authorization: `Bearer ${token}`,
         }});
-        setState(res.data);
+        setData(res.data);
         console.log(res.data)
         } catch (error) {
         console.log(error);
@@ -49,7 +49,6 @@ const Post = () => {
     };
 
     useEffect(() => {
-        fetchDataUserDetail();
         fetchComments()
     }, []);
 
@@ -115,8 +114,14 @@ const Post = () => {
             console.log("masuk sini")
         } catch (error) {
             console.log(error);
+        }finally{
+            console.log("masuk sokin brader")
         };
     };
+
+    useEffect(()=>{
+        fetchDataUserDetail();
+    },[])
 
     return (
         <div className='flex'>
@@ -127,7 +132,7 @@ const Post = () => {
             <Postdetail profile_picture = {profile_picture}
             data = {data}
             commentsData = {commentsData}
-            setData = {setState}
+            setData = {setData}
             username = {username}
             fullname = {fullname}
             isVerified={isVerified}
@@ -143,9 +148,11 @@ const Post = () => {
 }
 
 export async function getServerSideProps() {
+
     return {
       props: {}, // will be passed to the page component as props
     }
   }
+
  
 export default Post;

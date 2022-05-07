@@ -32,7 +32,7 @@ import { useRouter } from "next/router";
 import Cookies from 'js-cookie';
 import { useDispatch } from "react-redux";
 
-const LeftNavBar = ({username, fullname, profile_picture, postEverywhere}) => {
+const LeftNavBar = ({username, fullname, profile_picture, postEverywhere, isVerified}) => {
 
     const dispatch = useDispatch();
     
@@ -44,10 +44,10 @@ const LeftNavBar = ({username, fullname, profile_picture, postEverywhere}) => {
 
     const router = useRouter()
 
-    const signOut = () => {
+    const signOut = async () => {
         Cookies.remove("token");
         dispatch({ type : "LOGOUT" })
-        router.push('/')
+        await router.push('/')
     }
 
     const [selectedImage, setselectedImage] = useState([]);
@@ -129,7 +129,7 @@ const LeftNavBar = ({username, fullname, profile_picture, postEverywhere}) => {
                     
                     
                 </div>
-                <button onClick={onOpen} className='text-center text-xl rounded-full bg-pinktertiary py-3 px-20 hover:bg-pinksecondary duration-700'>Post</button>
+                {isVerified == 0 ? <button disabled onClick={onOpen} className='text-center text-xl rounded-full bg-darksecondary py-3 px-20'>Post</button> : <button onClick={onOpen} className='text-center text-xl rounded-full bg-pinktertiary py-3 px-20 hover:bg-pinksecondary duration-700'>Post</button>}
 
                 <button className='md:hidden absolute left-4 text-5xl'>
                     <IoAddCircleOutline/>

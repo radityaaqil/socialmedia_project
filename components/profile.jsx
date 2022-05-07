@@ -22,7 +22,7 @@ import { useRouter } from "next/router";
 import * as Yup from "yup";
 import React, { useState } from "react";
 import { FaRetweet } from 'react-icons/fa'
-import { BiComment, BiPhotoAlbum, BiDetail } from "react-icons/bi";
+import { BiComment, BiPhotoAlbum, BiDetail, BiReply } from "react-icons/bi";
 import { AiOutlineHeart } from "react-icons/ai";
 import { AiFillHeart } from "react-icons/ai";
 import { FiShare} from "react-icons/fi";
@@ -30,7 +30,7 @@ import { FiMoreHorizontal} from "react-icons/fi";
 import moment from "moment";
 import Link from "next/link";
 
-const Profile = ({editProfile, editAllPhotos, username, fullname, bio, profile_picture, cover_picture, location, posts, userPosts, counts, createdAt, userCommentsData, userComments, media, userPostMedia, userLikedPosts, likedPosts}) => {
+const Profile = ({isVerified, editProfile, editAllPhotos, username, fullname, bio, profile_picture, cover_picture, location, posts, userPosts, counts, createdAt, userCommentsData, userComments, media, userPostMedia, userLikedPosts, likedPosts, verifyMe}) => {
     
     const router = useRouter()
 
@@ -249,7 +249,8 @@ const Profile = ({editProfile, editAllPhotos, username, fullname, bio, profile_p
                         <div>@{val.username}</div>
                         <div>- {val.fromnow}</div>
                     </div>
-                    <div className="pt-2 min-w-fit">{val.comment}</div>
+                    <div className="pt-2 min-w-fit text-sm tracking-wider">Replying to <span className="font-bold tracking-wider">@{val.postowner_username}</span></div>
+                    <div className="pt-2 min-w-fit text-lg">{val.comment}</div>
                 </div>
             )
         })
@@ -313,10 +314,13 @@ const Profile = ({editProfile, editAllPhotos, username, fullname, bio, profile_p
                     {profile_picture ? <img src={`${API_URL}${profile_picture}`} alt="" className="ring-4 w-32 h-32 rounded-full ring-black object-cover"/> : <img src={`${API_URL}/photos/defaultcoverimage.png`} alt="" className="ring-4 w-32 h-32 rounded-full ring-black object-cover"/>}
                     
                 </div>
+                {isVerified == 0 ? <button onClick={verifyMe} className="absolute -bottom-14 right-32 p-2 hover:scale-125 duration-700 bg-pinktertiary rounded-full">Verify me!</button> : null}
 
-                <button onClick={onOpenPhoto} className="absolute -bottom-14 right-16 py-2 px-2 hover:scale-125 duration-700 text-3xl"><BiPhotoAlbum/></button>
+                {isVerified == 0 ? <button disabled onClick={onOpenPhoto} className="absolute -bottom-14 right-16 py-2 px-2 text-3xl"><BiPhotoAlbum/></button> : <button onClick={onOpenPhoto} className="absolute -bottom-14 right-16 py-2 px-2 hover:scale-125 duration-700 text-3xl"><BiPhotoAlbum/></button>}
 
-                <button onClick={onOpen} className="absolute -bottom-14 right-5 py-2 px-2 hover:scale-125 duration-700 text-3xl"><BiDetail/></button>
+                {isVerified == 0 ? <button disabled onClick={onOpen} className="absolute -bottom-14 right-5 py-2 px-2 text-3xl"><BiDetail/></button> : <button onClick={onOpen} className="absolute -bottom-14 right-5 py-2 px-2 hover:scale-125 duration-700 text-3xl"><BiDetail/></button>}
+
+                
             </div>
 
             <div className="mt-20 pl-6">

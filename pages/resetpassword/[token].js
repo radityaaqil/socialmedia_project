@@ -1,22 +1,41 @@
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import { useRouter } from 'next/router'
+import API_URL from "../../helpers/apiurl";
+import useUser from "../../hooks/useUser";
+import { BsFillCheckCircleFill } from "react-icons/bs";
+import { BsFillXCircleFill } from "react-icons/bs";
 import { GiHummingbird } from "react-icons/gi";
-import Link from 'next/link';
-import { useState } from "react";
 import { BsEyeFill, BsEyeSlashFill } from "react-icons/bs";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { useRouter } from "next/router";
-import { loginAction } from "../redux/actions/userActions";
-import { connect, useSelector } from "react-redux";
+import Link from "next/link";
+import Cookies from 'js-cookie';
+import Swal from "sweetalert2";
 
-const Tes = () => {
-    
+const ResetPassword = () => {
+
+    const router = useRouter()
+    const { token } = router.query;
+    //   const [status, setstatus] = useState(0);
+    //   const [loading, setloading] = useState(true);
+
+    //   if (loading) {
+    //     return (
+    //       <div className="grid justify-center pt-44 bg-black min-h-screen">
+    //         <div className="text-white flex flex-col items-center space-y-6">
+    //           <div className="text-5xl font-bold pt-6 text-pinktertiary">Loading . . .</div>
+    //         </div>
+    //       </div>
+    //     );
+    //   }
+
     const [show, setShow] = useState(false)
     const handleClick = () => setShow(!show)
 
     const [show1, setShow1] = useState(false)
     const handleClick1 = () => setShow1(!show1)
-
-    const router = useRouter()
 
     const formik = useFormik({
         initialValues : {
@@ -29,15 +48,27 @@ const Tes = () => {
             confirmPassword : Yup.string().oneOf([Yup.ref('password'), null], 'Passwords must match'),
         }),
 
-        onSubmit: (values) => {
-            
+        onSubmit: async (values) => {
+            // let token = Cookies.get('token')
             try {
-                
-               
-
+                await axios.post(`${API_URL}/auth/resetpassword`, values,{
+                    headers: {
+                      authorization: `Bearer ${token}`,
+                    },
+                });
+                await Swal.fire(
+                    'Password successfully changed!',
+                    "Let's get you back in!",
+                    'success'
+                    )
+                router.push('/login')
             } catch (error) {
                 console.log(error)
-                  
+                await Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: (error.response.data.message || "Network Error"),
+                  }) 
             }     
         }
     });
@@ -96,6 +127,7 @@ const Tes = () => {
                         <div className='flex space-x-2 text-white pt-5 pb-5'>
                             <div>
                                 <input 
+                                    className="accent-pinktertiary"
                                     type="checkbox" 
                                     name="terms" 
                                     required/>
@@ -117,6 +149,13 @@ const Tes = () => {
 
         </div>
     
-    )}
- 
-export default Tes;
+    )
+};
+
+export async function getServerSideProps() {
+  return {
+    props: {}, // will be passed to the page component as props
+  }
+}
+
+export default ResetPassword;

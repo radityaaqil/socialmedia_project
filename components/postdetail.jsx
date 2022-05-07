@@ -2,7 +2,7 @@ import { useEffect } from "react"
 import API_URL from "../helpers/apiurl";
 import { BiComment } from "react-icons/bi";
 import { AiOutlineHeart } from "react-icons/ai";
-import { AiFillHeart } from "react-icons/ai";
+import { AiFillHeart, AiFillEdit } from "react-icons/ai";
 import { FiShare} from "react-icons/fi";
 import { FiMoreHorizontal} from "react-icons/fi";
 import { IoClose } from "react-icons/io5";
@@ -21,11 +21,25 @@ import Cookies from "js-cookie"
 import Swal from "sweetalert2";
 
 const Postdetail = ({data, username, profile_picture, updatePost, deletePost, addLikes, commentsData, insertComment}) => {
-
+    
     const { isOpen, onOpen, onClose} = useDisclosure();
+
+    const mapInitialState = () => {
+        const data2 = data.map((val)=>{
+            return val.caption
+        })
+        const data3 = data[0].photos.map((val)=>{
+            return val.image
+        })
+        console.log(data3)
+    
+        setInput({...input, caption:data2[0]})
+        
+        onOpen()
+    }
     
     const [input, setInput] = useState({
-        caption:"",
+        caption:''
     });
 
     const [inputComment, setinputComment] = useState({
@@ -36,17 +50,24 @@ const Postdetail = ({data, username, profile_picture, updatePost, deletePost, ad
 
     useEffect(()=>{
         setCharacters(inputComment.comment.length)
-    },[inputComment])
+    },[inputComment]);
 
 
     // console.log(data, "data oi")
 
-    const [likesB, setlikesB] = useState(false)
+    // const [likesB, setlikesB] = useState(false)
 
-    const handleClick = () => {
-        setlikesB(!likesB)
-        addLikes()
-    }
+    const handleClick = async (e) => {
+        // setlikesB(!likesB)
+        e.preventDefault();
+        try {
+            await addLikes();
+            
+        } catch (error) {
+            console.log(error)
+        }
+        // await fetchDataUserDetail()
+    };
 
 
     const [selectedImage, setselectedImage] = useState([]);
@@ -146,14 +167,44 @@ const Postdetail = ({data, username, profile_picture, updatePost, deletePost, ad
     //     renderData()
     // }, []);
 
-    
+    const [commentsCounts, setCommentsCounts] = useState(5);
 
+    const more = () => {
+        setCommentsCounts(commentsData.length)
+    };
+
+    const less = () => {
+        setCommentsCounts(5)
+    };
+
+    const commentsFirstRender = () => {
+        return commentsData.slice(0, commentsCounts).map((val, index)=>{
+            return(
+                <div key={index} className="py-4 pl-8 border-b-2 border-darksecondary">
+                    <div className="flex gap-3 items-center">
+                        <img className="object-cover w-10 h-10 rounded-full" src={`${API_URL}${val.profile_picture}`} alt="" />
+                        <div>@{val.username}</div>
+                        <div>- {val.fromnow}</div>
+                    </div>
+                    <div className="pt-2 mr-8 pl-14">{val.comment}</div>
+                </div>
+            )
+        })
+    };
+    
+    
+        
+
+    // console.log(commentsNewData, "newDataComments")
+    // console.log(commentsData, "DataComments")
+
+    
     const renderData = () => {
         return data.map((val, index) => {
             return(
-                <div key={index} className='border-b-2 border-darksecondary flex pb-4 pl-6 pt-4 hover:bg-darksecondary duration-700 mt-20'>
-                    <div><a href="">{val.profile_picture ? <img src={`${API_URL}${val.profile_picture}`} alt="" className="object-cover w-14 h-14 rounded-full"/> : <img src={`${API_URL}/photos/defaultcoverimage.png`} alt="" className="object-cover w-14 h-14 rounded-full" />}</a></div>
-                    <div className='text-white flex flex-col pl-6'>
+                <div key={index} className='border-b-2 border-darksecondary flex pb-4 pl-6 pt-2 hover:bg-darksecondary duration-700 mt-20'>
+                    <div className="min-w-fit"><a href="">{val.profile_picture ? <img src={`${API_URL}${val.profile_picture}`} alt="" className="object-cover w-14 h-14 rounded-full"/> : <img src={`${API_URL}/photos/defaultcoverimage.png`} alt="" className="object-cover w-14 h-14 rounded-full" />}</a></div>
+                    <div className='text-white flex flex-col pl-3 w-10/12'>
                         <div className='flex space-x-2'>
                             <div>{val.fullname}</div>
                             <div>@{val.username}</div>
@@ -167,38 +218,38 @@ const Postdetail = ({data, username, profile_picture, updatePost, deletePost, ad
                             )
                         }) : null }</div>
                         <div className='pt-2 text-lg pr-6'></div>
-                        <div className='pt-4 flex space-x-28'>
-                            {(username == val.username) ? <button onClick={onOpen} className='text-lg hover:scale-150 duration-700'><BiComment/></button> : null}
+                        <div className='pt-4 flex justify-between items-center h-4'>
+                            {(username == val.username) ? <button onClick={mapInitialState} className='text-lg hover:scale-150 duration-700'><AiFillEdit/></button> : null}
                             
-                            {likesB ? <button onClick={()=>{handleClick()}} className='text-lg text-red-500 hover:scale-150 duration-700 flex items-center gap-2'>{val.likes ? val.likes : null}<AiFillHeart/></button> : <button onClick={()=>{handleClick()}} className='text-lg hover:scale-150 duration-700 flex items-center gap-2'>{val.likes ? val.likes : null}<AiOutlineHeart/></button>}
+                            {val.alreadyliked ? <button onClick={(e)=>handleClick(e)} className='text-lg text-red-500 hover:scale-150 duration-700 flex items-center gap-2'>{val.likes ? <span>{val.likes}</span> : null}<AiFillHeart/></button> : <button onClick={(e)=>handleClick(e)} className='text-lg hover:scale-150 duration-700 flex items-center gap-2'>{val.likes ? <span>{val.likes}</span> : null}<AiOutlineHeart/></button>}
                             
                             <button className='text-lg hover:scale-150 duration-700'><FiShare/></button>
                             {(username == val.username) ? <button onClick={() => {deletePost()}} className='text-lg hover:scale-150 hover:text-red-500 duration-700'><IoClose/></button> : null}
                             
                         </div>
                     </div>
-                    <div className='mr-5'>
+                    <div className='mr-5 w-fit'>
                         <button className=''><FiMoreHorizontal/></button>
                     </div>
                 </div>  
             )
         })
-    }
+    };
 
-    const renderComment = () => {
-        return commentsData.map((val, index) => {
-            return (
-                <div key={index} className="py-4 pl-8 border-b-2 border-darksecondary">
-                    <div className="flex gap-3 items-center">
-                        <img className="object-cover w-10 h-10 rounded-full" src={`${API_URL}${val.profile_picture}`} alt="" />
-                        <div>@{val.username}</div>
-                        <div>- {val.fromnow}</div>
-                    </div>
-                    <div className="pt-2 mr-8">{val.comment}</div>
-                </div>
-            )
-        })
-    }
+    // const renderComment = () => {
+    //     return commentsData.map((val, index) => {
+    //         return (
+    //             <div key={index} className="py-4 pl-8 border-b-2 border-darksecondary">
+    //                 <div className="flex gap-3 items-center">
+    //                     <img className="object-cover w-10 h-10 rounded-full" src={`${API_URL}${val.profile_picture}`} alt="" />
+    //                     <div>@{val.username}</div>
+    //                     <div>- {val.fromnow}</div>
+    //                 </div>
+    //                 <div className="pt-2 mr-8">{val.comment}</div>
+    //             </div>
+    //         )
+    //     })
+    // }
     
     
     return (
@@ -211,12 +262,22 @@ const Postdetail = ({data, username, profile_picture, updatePost, deletePost, ad
                     <div>@{username}</div>
                 </div>
                 <div className="flex justify-between items-center">
-                    <textarea onChange={inputCommentHandler} value={inputComment.comment} className="resize-none bg-black text-white focus:outline-none pt-1" name="comment" rows="1" cols="50" placeholder="Post your reply..."></textarea>
+                    <textarea onChange={inputCommentHandler} value={inputComment.comment} className="resize-none bg-black text-white focus:outline-none pt-1" name="comment" rows="1" cols="48" placeholder="Post your reply..."></textarea>
                     <button onClick={submitComment} className='bg-pinktertiary text-white rounded-full py-2 mr-8 px-3 text-base hover:bg-pinksecondary duration-700'>Reply</button>
                 </div>
-                {inputComment.comment.length <= 300 ? <div className="text-white text-sm">{characters} / 300</div> : <div className="text-red-500 text-sm">{characters} / 300 Maximum limit exceeded</div>}
+
+                {inputComment.comment.length === 0 ? null : null}
+
+                {inputComment.comment.length > 0 && inputComment.comment.length <= 300? <div className="text-white text-sm">{characters} / 300</div> : null}
+
+                {inputComment.comment.length > 300 ? <div className="text-red-500 text-sm">{characters} / 300 characters limit exceeded</div> : null}
             </div>
-            {renderComment()}
+            {/* {renderComment()} */}
+            {commentsFirstRender()}
+            {commentsData.length > 5 && commentsCounts == 5? <div onClick={()=>more()} className="hover:bg-darksecondary duration-500 grid justify-center py-2 hover:cursor-pointer">More comments...</div> : null}
+
+            {commentsCounts == commentsData.length ? <div onClick={()=>less()} className="hover:bg-darksecondary duration-500 grid justify-center py-2 hover:cursor-pointer">Less comments...</div> : null}
+           
             <Modal size="sm" isOpen={isOpen} onClose={onClose} roundedTop='3xl'>
                 <ModalOverlay />
                     <form onSubmit={submitPost}>
@@ -255,5 +316,6 @@ const Postdetail = ({data, username, profile_picture, updatePost, deletePost, ad
         </div>
     );
 }
+
  
 export default Postdetail;

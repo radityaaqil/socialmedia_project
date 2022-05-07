@@ -38,5 +38,9 @@ module.exports = {
       }
     },
   },
-  plugins: [],
+  plugins: [
+    require("tailwindcss-autofill"),
+    require("tailwindcss-shadow-fill"),
+    require("tailwindcss-text-fill"),
+  ],
 }

@@ -1,5 +1,4 @@
 import { GiHummingbird } from "react-icons/gi";
-import Link from 'next/link';
 import { useState } from "react";
 import { BsEyeFill, BsEyeSlashFill } from "react-icons/bs";
 import { useFormik } from "formik";
@@ -7,6 +6,7 @@ import * as Yup from "yup";
 import { useRouter } from "next/router";
 import { loginAction } from "../redux/actions/userActions";
 import { connect, useSelector } from "react-redux";
+import Link from "next/link";
 
 const Login = ({loginAction}) => {
     
@@ -67,7 +67,7 @@ const Login = ({loginAction}) => {
                             
                             <input 
                             placeholder="Email or Username" 
-                            className=" bg-black border-2 rounded-full border-white focus:outline-none text-white p-2 w-70 placeholder-pinktertiary" 
+                            className=" bg-black autofill:shadow-fill-black autofill:text-fill-white border-2 rounded-full border-white focus:outline-none text-white p-2 w-70 placeholder-pinktertiary" 
                             name="username"
                             type="text"
                             onChange={formik.handleChange}
@@ -95,10 +95,13 @@ const Login = ({loginAction}) => {
 
                         </div>
 
-                        <div className='flex space-x-2 text-white'>
-                            <div><input type="checkbox" /></div>
-                            <div><a href="" className="text-pinktertiary">Remember Me</a></div>
-                        </div>
+                        <Link href="/forgotpassword">
+                            <div className='grid justify-center'>
+                                <div><a href="" className="text-pinktertiary hover:underline">Forgot Password?</a></div>
+                            </div>
+                        </Link>
+                        
+                        
 
                         <div className='py-2 flex justify-center bg-pinktertiary rounded-full focus:outline-none hover:cursor-pointer hover:text-black duration-700 text-white'><button className='text-2xl font-bold' type="submit">Sign In</button>
                         </div>

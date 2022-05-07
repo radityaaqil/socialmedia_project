@@ -18,7 +18,7 @@ export function middleware(req) {
   }
 
   if (req.nextUrl.pathname === "/register" && token) {
-    return NextResponse.redirect(new URL("/home", req.url));
+    return NextResponse.redirect(new URL("/userprofile", req.url));
   }
 
 }

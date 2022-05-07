@@ -9,7 +9,7 @@ import axios from "axios";
 
 const Userprofile = () => {
 
-    const { username, fullname, bio, profile_picture, cover_picture, location, createdAt } = useUser()
+    const { username, fullname, bio, profile_picture, cover_picture, location, createdAt, isVerified } = useUser()
 
     const [data, setState] = useState([]);
 
@@ -193,7 +193,23 @@ const Userprofile = () => {
         } catch (error) {
             console.log(error)
         }
-    };    
+    };
+
+    const verifyMe = async () => {
+        try {
+          let token = Cookies.get("token")
+          await axios.get(`${API_URL}/auth/verifyme`, {
+            headers: {
+              authorization: `Bearer ${token}`,
+            },
+          });
+        } catch (error) {
+          console.log(error);
+        } finally {
+          
+        }
+      };
+    
 
     return ( 
         <div className="flex">
@@ -204,6 +220,7 @@ const Userprofile = () => {
             fetchData = {fetchData}
             userPosts={userPosts}
             fetchPostCounts={fetchPostCounts}
+            isVerified={isVerified}
             />
             <Profile  username = {username}
             fullname = {fullname}
@@ -220,7 +237,9 @@ const Userprofile = () => {
             userPostMedia={userPostMedia}
             userLikedPosts={userLikedPosts}
             counts={counts}
-            createdAt={createdAt}/>
+            createdAt={createdAt}
+            isVerified={isVerified}
+            verifyMe={verifyMe}/>
             <RightBarProfile/>
         </div>
     );
