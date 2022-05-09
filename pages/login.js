@@ -13,6 +13,8 @@ const Login = ({loginAction}) => {
     const [show, setShow] = useState(false)
     const handleClick = () => setShow(!show)
 
+    const [disableButton, setdisableButton] = useState(false)
+
     const router = useRouter()
 
     const { isLogin } = useSelector((state) => state.user);
@@ -31,13 +33,14 @@ const Login = ({loginAction}) => {
         onSubmit: (values) => {
             
             try {
-                
+                setdisableButton(true)
                 loginAction(values)
 
             } catch (error) {
                 console.log(error)
-                  
-            }     
+            } finally{
+                setdisableButton(false)
+            } 
         }
     })
 
@@ -103,8 +106,9 @@ const Login = ({loginAction}) => {
                         
                         
 
-                        <div className='py-2 flex justify-center bg-pinktertiary rounded-full focus:outline-none hover:cursor-pointer hover:text-black duration-700 text-white'><button className='text-2xl font-bold' type="submit">Sign In</button>
-                        </div>
+                        {disableButton ? <div disabled className='py-2 flex justify-center bg-darksecondary rounded-full focus:outline-none text-white'><button disabled type="submit" className='text-2xl font-bold'>Sign In</button>
+                        </div> : <div className='py-2 flex justify-center bg-pinktertiary rounded-full focus:outline-none hover:cursor-pointer hover:text-black duration-700 text-white disabled:bg-black '><button type="submit" className='text-2xl font-bold'>Sign In</button>
+                        </div>}
 
                         <div className="text-pinktertiary font-thin focus:outline-none">Don't have an account? <Link href="/register"><span className="hover:underline-offset-2 hover:underline hover:cursor-pointer">Sign Up</span></Link></div>
                     </form>

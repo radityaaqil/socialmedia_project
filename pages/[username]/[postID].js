@@ -8,6 +8,7 @@ import axios from 'axios';
 import API_URL from '../../helpers/apiurl';
 import Cookies from "js-cookie";
 import Swal from 'sweetalert2';
+// import PostDetailV2 from '../../components/postdetailV2';
 
 const Post = () => {
 
@@ -58,7 +59,7 @@ const Post = () => {
             await axios.patch(`${API_URL}/post/editpostcaptionimage/${postID}`, formData, {headers: {
                 authorization: `Bearer ${token}`,
             }});
-            await fetchDataUserDetail();
+            fetchDataUserDetail();
         } catch (error) {
             console.log(error);
         }
@@ -142,6 +143,16 @@ const Post = () => {
             updatePost={updatePost}
             deletePost={deletePost}
             addLikes={addLikes}/>
+            {/* {data.map((val, index)=>{
+                <PostDetailV2
+                key={index}
+                profilepicture={val.profile_picture}
+                fullname={val.fullname}
+                username={val.username}
+                caption={val.caption}
+                photos={val.photos}
+                />
+            })} */}
             <RightBar/>
         </div>
     );

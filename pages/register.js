@@ -39,9 +39,9 @@ const Register = ({ registerAction }) => {
 
         onSubmit: async (values) => {
             
-            try {     
+            try {
+                setdisableButton(true)     
                 registerAction(values)
-                setdisableButton(true)
         
             } catch (error) {
                 console.log(error)
@@ -147,8 +147,9 @@ const Register = ({ registerAction }) => {
                             <div><a href="" className="text-pinktertiary">I agree to the terms and conditions</a></div>
                         </div>
 
-                        <div className='py-2 flex justify-center bg-pinktertiary rounded-full focus:outline-none hover:cursor-pointer hover:text-black duration-700 text-white disabled:bg-black '><button type="submit" className='text-2xl font-bold'>Sign Up</button>
-                        </div>
+                        {disableButton ? <div disabled className='py-2 flex justify-center bg-darksecondary rounded-full focus:outline-none text-white'><button disabled type="submit" className='text-2xl font-bold'>Sign Up</button>
+                        </div> : <div className='py-2 flex justify-center bg-pinktertiary rounded-full focus:outline-none hover:cursor-pointer hover:text-black duration-700 text-white disabled:bg-black '><button type="submit" className='text-2xl font-bold'>Sign Up</button>
+                        </div>}
 
                         <div className="text-pinktertiary font-thin pt-5">Already have an account? <Link href="/login"><span className="hover:underline-offset-2 hover:underline hover:cursor-pointer">Sign Up</span></Link></div>
                     </form>

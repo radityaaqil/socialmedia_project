@@ -20,7 +20,7 @@ import axios from "axios";
 import Cookies from "js-cookie"
 import Swal from "sweetalert2";
 
-const Postdetail = ({data, fetchDataUserDetail, setData, username, isVerified, profile_picture, updatePost, deletePost, addLikes, commentsData, insertComment}) => {
+const PostDetailV2 = ({data, username, isVerified, profile_picture, updatePost, deletePost, addLikes, commentsData, insertComment}) => {
     
     const { isOpen, onOpen, onClose} = useDisclosure();
 
@@ -149,8 +149,7 @@ const Postdetail = ({data, fetchDataUserDetail, setData, username, isVerified, p
             // await axios.patch(`${API_URL}/post/editpostcaptionimage/${postID}`, formData, {headers: {
             //     authorization: `Bearer ${token}`,
             // }})
-            await updatePost(formData)
-            // await fetchDataUserDetail()
+            updatePost(formData)
             
             await Swal.fire(
                 'Post successfully changed!',
@@ -187,85 +186,42 @@ const Postdetail = ({data, fetchDataUserDetail, setData, username, isVerified, p
         setCommentsCounts(5)
     };
 
-    const commentsFirstRender = () => {
-        return commentsData.slice(0, commentsCounts).map((val, index)=>{
-            return(
-                <div key={index} className="py-4 pl-8 border-b-2 border-darksecondary">
-                    <div className="flex gap-3 items-center">
-                        <img className="object-cover w-10 h-10 rounded-full" src={`${API_URL}${val.profile_picture}`} alt="" />
-                        <div>@{val.username}</div>
-                        <div>- {val.fromnow}</div>
-                    </div>
-                    <div className="pt-2 mr-8 pl-14">{val.comment}</div>
-                </div>
-            )
-        })
-    };
-    
-    
-        
-
-    // console.log(commentsNewData, "newDataComments")
-    // console.log(commentsData, "DataComments")
-
-    
-    const renderData = () => {
-        return data.map((val, index) => {
-            return(
-                <div key={index} className='border-b-2 border-darksecondary flex pb-4 pl-6 pt-2 hover:bg-darksecondary duration-700 mt-20'>
-                    <div className="min-w-fit"><a href="">{val.profile_picture ? <img src={`${API_URL}${val.profile_picture}`} alt="" className="object-cover w-14 h-14 rounded-full"/> : <img src={`${API_URL}/photos/defaultcoverimage.png`} alt="" className="object-cover w-14 h-14 rounded-full" />}</a></div>
-                    <div className='text-white flex flex-col pl-3 w-10/12'>
-                        <div className='flex space-x-2'>
-                            <div>{val.fullname}</div>
-                            <div>@{val.username}</div>
-                            {/* <div>- {val.created_at}</div> */}
-                        </div>
-                        <div className='pt-2 text-lg'>{val.caption}</div>
-                        <div className='pt-2 grid grid-cols-2 gap-2'>{val.photos ? 
-                        val.photos.map((val1, index1)=>{
-                            return (  
-                                <div className='' key={index1}><img className='rounded-xl object-cover w-full h-40' src={`${API_URL}${val1.image}`}></img></div> 
-                            )
-                        }) : null }</div>
-                        <div className='pt-2 text-lg pr-6'></div>
-                        <div className='pt-4 flex justify-between items-center h-4'>
-                            {(username == val.username) ? <button onClick={mapInitialState} className='text-lg hover:scale-150 duration-700'><AiFillEdit/></button> : null}
-                            
-                            {val.alreadyliked ? <button onClick={(e)=>handleClick(e)} className='text-lg text-red-500 hover:scale-150 duration-700 flex items-center gap-2'>{val.likes ? <span>{val.likes}</span> : null}<AiFillHeart/></button> : <button onClick={(e)=>handleClick(e)} className='text-lg hover:scale-150 duration-700 flex items-center gap-2'>{val.likes ? <span>{val.likes}</span> : null}<AiOutlineHeart/></button>}
-                            
-                            <button className='text-lg hover:scale-150 duration-700'><FiShare/></button>
-                            {(username == val.username) ? <button onClick={(e) => handleDeletePost(e)} className='text-lg hover:scale-150 hover:text-red-500 duration-700'><IoClose/></button> : null}
-                            
-                        </div>
-                    </div>
-                    <div className='mr-5 w-fit'>
-                        <button className=''><FiMoreHorizontal/></button>
-                    </div>
-                </div>  
-            )
-        })
-    };
-
-    // const renderComment = () => {
-    //     return commentsData.map((val, index) => {
-    //         return (
-    //             <div key={index} className="py-4 pl-8 border-b-2 border-darksecondary">
-    //                 <div className="flex gap-3 items-center">
-    //                     <img className="object-cover w-10 h-10 rounded-full" src={`${API_URL}${val.profile_picture}`} alt="" />
-    //                     <div>@{val.username}</div>
-    //                     <div>- {val.fromnow}</div>
-    //                 </div>
-    //                 <div className="pt-2 mr-8">{val.comment}</div>
-    //             </div>
-    //         )
-    //     })
-    // }
-    
-    
     return (
         <div className="bg-black min-h-screen w-5/12 relative text-white">
             <div className='bg-black bg-opacity-70 backdrop-blur-md fixed top-0 pl-6 py-6 w-5/12 z-10 text-2xl'>Post</div>
-            {renderData()}
+            
+            {/* Post Detail */}
+            <div className='border-b-2 border-darksecondary flex pb-4 pl-6 pt-2 hover:bg-darksecondary duration-700 mt-20'>
+                <div className="min-w-fit"><a href="">{val.profile_picture ? <img src={`${API_URL}${val.profile_picture}`} alt="" className="object-cover w-14 h-14 rounded-full"/> : <img src={`${API_URL}/photos/defaultcoverimage.png`} alt="" className="object-cover w-14 h-14 rounded-full" />}</a></div>
+                <div className='text-white flex flex-col pl-3 w-10/12'>
+                    <div className='flex space-x-2'>
+                        <div>{val.fullname}</div>
+                        <div>@{val.username}</div>
+                        {/* <div>- {val.created_at}</div> */}
+                    </div>
+                    <div className='pt-2 text-lg'>{val.caption}</div>
+                    <div className='pt-2 grid grid-cols-2 gap-2'>{val.photos ? 
+                    val.photos.map((val1, index1)=>{
+                        return (  
+                            <div className='' key={index1}><img className='rounded-xl object-cover w-full h-40' src={`${API_URL}${val1.image}`}></img></div> 
+                        )
+                    }) : null }</div>
+                    <div className='pt-2 text-lg pr-6'></div>
+                    <div className='pt-4 flex justify-between items-center h-4'>
+                        {(username == val.username) ? <button onClick={mapInitialState} className='text-lg hover:scale-150 duration-700'><AiFillEdit/></button> : null}
+                        
+                        {val.alreadyliked ? <button onClick={(e)=>handleClick(e)} className='text-lg text-red-500 hover:scale-150 duration-700 flex items-center gap-2'>{val.likes ? <span>{val.likes}</span> : null}<AiFillHeart/></button> : <button onClick={(e)=>handleClick(e)} className='text-lg hover:scale-150 duration-700 flex items-center gap-2'>{val.likes ? <span>{val.likes}</span> : null}<AiOutlineHeart/></button>}
+                        
+                        <button className='text-lg hover:scale-150 duration-700'><FiShare/></button>
+                        {(username == val.username) ? <button onClick={(e) => handleDeletePost(e)} className='text-lg hover:scale-150 hover:text-red-500 duration-700'><IoClose/></button> : null}
+                        
+                    </div>
+                </div>
+                <div className='mr-5 w-fit'>
+                    <button className=''><FiMoreHorizontal/></button>
+                </div>
+            </div>  
+
             <div className="pl-8 pt-4 border-b-2 border-darksecondary pb-4">
                 <div className="flex items-center gap-3">
                     <img className="object-cover w-10 h-10 rounded-full" src={`${API_URL}${profile_picture}`} alt="" />
@@ -286,7 +242,20 @@ const Postdetail = ({data, fetchDataUserDetail, setData, username, isVerified, p
                 {inputComment.comment.length > 300 ? <div className="text-red-500 text-sm">{characters} / 300 characters limit exceeded</div> : null}
             </div>
             {/* {renderComment()} */}
-            {commentsFirstRender()}
+            {/* Render Comments */}
+
+            {commentsData.slice(0, commentsCounts).map((val, index)=>{
+                <div key={index} className="py-4 pl-8 border-b-2 border-darksecondary">
+                <div className="flex gap-3 items-center">
+                    <img className="object-cover w-10 h-10 rounded-full" src={`${API_URL}${val.profile_picture}`} alt="" />
+                    <div>@{val.username}</div>
+                    <div>- {val.fromnow}</div>
+                </div>
+                <div className="pt-2 mr-8 pl-14">{val.comment}</div>
+            </div>
+            })}
+            
+
             {commentsData.length > 5 && commentsCounts == 5? <div onClick={()=>more()} className="hover:bg-darksecondary duration-500 grid justify-center py-2 hover:cursor-pointer">More comments...</div> : null}
 
             {commentsCounts == commentsData.length ? <div onClick={()=>less()} className="hover:bg-darksecondary duration-500 grid justify-center py-2 hover:cursor-pointer">Less comments...</div> : null}
@@ -329,6 +298,5 @@ const Postdetail = ({data, fetchDataUserDetail, setData, username, isVerified, p
         </div>
     );
 }
-
  
-export default Postdetail;
+export default PostDetailV2;

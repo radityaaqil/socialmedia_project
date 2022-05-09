@@ -270,29 +270,18 @@ const Feed = ({profile_picture, postEverywhere, data, hasMore, fetchDataOnScroll
                     </form>
                     
                     {/* Dummy Feed Template */}
-                    {/* <div className='border-b-2 border-darksecondary flex pb-4 pl-6 pt-4 hover:bg-darksecondary duration-700'>
-                        <div className='min-w-fit bg-yellow-400'><img src="" alt="" className="object-cover w-14 h-14 rounded-full"/></div>
-                            <div className='text-white flex flex-col pl-6 bg-green-500 w-10/12'>
-                                <div className='flex space-x-2'>
-                                    <div>Barbara Palvin</div>
-                                    <div>@realbarbarapalvin</div>
-                                    <div>- 23 minutes ago</div>
-                                </div>
-                                <div className='pt-2 text-lg'>heeeeeeyyyyyyyyyy</div>
-                                <div className='pt-2 text-lg pr-6'></div>
-                                <div className='pt-4 flex justify-between'>
-                                    <button className='text-lg hover:scale-150 duration-700 flex items-center gap-2'>3<BiComment/></button>
-                                    <button className='text-lg hover:scale-150 duration-700'><FaRetweet/></button>
-                                    <button className='text-lg text-red-500 hover:scale-150 duration-700 flex items-center gap-2'>3<AiFillHeart/></button>
-                                   
-                                    <button className='text-lg hover:scale-150 duration-700'><FiShare/></button>
-                                </div>
-                            </div>
-                            <div className='mr-5 bg-blue-500 w-fit'>
-                                <button className=''><FiMoreHorizontal/></button>
-                            </div>
-                        </div> */}
 
+                    {isVerified == 0 ? <Link href="/userprofile">
+                        <div className='border-b-2 border-darksecondary flex pb-4 pl-6 pt-4 hover:bg-darksecondary hover:cursor-pointer duration-700 bg-pinktertiary'>
+                            <div className=''></div>
+                                <div className='text-white flex flex-col pl-16 w-11/12'>
+                                    <div className='pt-2 text-lg'>You need to verify your account first! Click here!</div>
+                                    <div className='pt-2 text-lg pr-6'></div>
+                                </div>
+                        </div>
+                    </Link> : null}
+                    
+            
                     <InfiniteScroll
                     hasMore={hasMore}
                     next={fetchDataOnScroll}

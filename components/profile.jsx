@@ -67,7 +67,7 @@ const Profile = ({isVerified, editProfile, editAllPhotos, username, fullname, bi
 
         onSubmit : async (values) => {
             try {
-                editProfile(values)
+                await editProfile(values)
                 onClose()
                 
             } catch (error) {
@@ -76,7 +76,12 @@ const Profile = ({isVerified, editProfile, editAllPhotos, username, fullname, bi
             }     
         }
 
-    })
+    });
+
+    const closeModalEditProfile = () => {
+        formik.setValues(formik.initialValues)
+        onClose()
+    }
     
     const TogglePost = () => {
     //   setActive(!isActive);
@@ -113,19 +118,19 @@ const Profile = ({isVerified, editProfile, editAllPhotos, username, fullname, bi
         }
     }
 
-    const deletePhoto = async () => {
-        try {
-            let token = Cookies.get("token");
+    // const deletePhoto = async () => {
+    //     try {
+    //         let token = Cookies.get("token");
     
-            await axios.patch(`${API_URL}/photos/deletecoverphotos`, null ,{
-                headers: {
-                    authorization: `Bearer ${token}`,
-                },
-            });
-        } catch (error) {
-            console.log(error);
-        }
-    }
+    //         await axios.patch(`${API_URL}/photos/deletecoverphotos`, null ,{
+    //             headers: {
+    //                 authorization: `Bearer ${token}`,
+    //             },
+    //         });
+    //     } catch (error) {
+    //         console.log(error);
+    //     }
+    // }
 
     const submitPhoto = async () => {
         try {
@@ -148,14 +153,28 @@ const Profile = ({isVerified, editProfile, editAllPhotos, username, fullname, bi
             //         },
             //     }) 
             // ])
-
-            await editAllPhotos({formData, formDataCover});
+            
+            if(selectedCoverImage.file.length == 0 && selectedImage.file.length == 0){
+                onClosePhoto()
+                throw "Please select images to submit!"
+            }else if(selectedImage.file.length == 0){
+                onClosePhoto()
+                throw "Please select profile picture!"
+            }else if(selectedCoverImage.file.length == 0){
+                onClosePhoto()
+                throw "Please select cover picture!"
+            }else{
+                await editAllPhotos({formData, formDataCover});
+                setselectedCoverImage({...selectedCoverImage, file:[]})
+                setselectedImage({...selectedImage, file:[]})
+                onClosePhoto()
+            }
 
             // await editProfilePhoto(formData);
 
             // await editCoverPhoto(formDataCover);
 
-            onClosePhoto()
+            // onClosePhoto()
             
             await Swal.fire(
             'Successfully changed pictures!',
@@ -165,6 +184,11 @@ const Profile = ({isVerified, editProfile, editAllPhotos, username, fullname, bi
 
         } catch (error) {
             console.log(error)
+            await Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: (error || "Network Error"),
+              })
         }
     }
 
@@ -250,7 +274,7 @@ const Profile = ({isVerified, editProfile, editAllPhotos, username, fullname, bi
                         <div>- {val.fromnow}</div>
                     </div>
                     <div className="pt-2 min-w-fit text-sm tracking-wider">Replying to <span className="font-bold tracking-wider">@{val.postowner_username}</span></div>
-                    <div className="pt-2 min-w-fit text-lg">{val.comment}</div>
+                    <div className="pt-2 max-w-fit text-lg">{val.comment}</div>
                 </div>
             )
         })
@@ -413,8 +437,8 @@ const Profile = ({isVerified, editProfile, editAllPhotos, username, fullname, bi
                                 </div>
                                 <input className='hidden' type="file" id='coverPic' onChange={onFileChangeCover}/>
                                 <input className='hidden' type="file" id='profilePic' onChange={onFileChange}/>
-                                <button type="button" onClick={deletePhoto} className="absolute left-64 top-20 text-3xl bg-darkprimary hover:bg-darksecondary duration-700 rounded-full p-2 bg-opacity-60 text-white"><IoClose/></button>
-                                <label for="coverPic" type="button" className="absolute left-40 top-20 text-3xl bg-darkprimary hover:bg-darksecondary hover:cursor-pointer duration-700 rounded-full p-2 bg-opacity-60 text-white"><IoAddCircleOutline/></label>
+                                {/* <button type="button" onClick={deletePhoto} className="absolute left-64 top-20 text-3xl bg-darkprimary hover:bg-darksecondary duration-700 rounded-full p-2 bg-opacity-60 text-white"><IoClose/></button> */}
+                                <label for="coverPic" type="button" className="absolute left-52 top-20 text-3xl bg-darkprimary hover:bg-darksecondary hover:cursor-pointer duration-700 rounded-full p-2 bg-opacity-60 text-white"><IoAddCircleOutline/></label>
                                 <label for="profilePic" type="button" className="absolute left-24 top-48 text-3xl bg-darkprimary hover:bg-darksecondary hover:cursor-pointer duration-700 rounded-full p-1 bg-opacity-60 text-white"><IoAddCircleOutline/></label>
 
                                 {/* <button type="button" className="text-white absolute -bottom-10 right-4 border-2 py-1 px-2 rounded-full hover:bg-darksecondary duration-700" onClick={submitPhoto}>Confirm photos</button> */}
@@ -432,9 +456,10 @@ const Profile = ({isVerified, editProfile, editAllPhotos, username, fullname, bi
                     <form onSubmit={formik.handleSubmit}>
                         <ModalContent> 
                             <ModalHeader className='bg-darkprimary text-white backdrop-blur-lg flex font-thin items-center w-full gap-4 text-lg'>
-                                <button onClick={onClose} type="button" className="w-1/6 rounded-full"><div className="hover:bg-darksecondary w-fit p-2 rounded-full text-2xl duration-700"><IoClose/></div></button>
+                                <button onClick={closeModalEditProfile} type="button" className="w-1/6 rounded-full"><div className="hover:bg-darksecondary w-fit p-2 rounded-full text-2xl duration-700"><IoClose/></div></button>
                                 <div className="w-4/6 text-left font-thin">Edit Details</div>
-                                <button type="submit" className="w-1/4 grid justify-center"><div className="bg-pinktertiary w-fit py-1 px-3 hover:bg-pinksecondary duration-700 rounded-full">Save</div></button>    
+                                {formik.values.fullname == fullname && formik.values.username == username && formik.values.bio == bio && formik.values.location == location ? <button type="submit" disabled className="w-1/4 grid justify-center"><div className="bg-darksecondary w-fit py-1 px-3 rounded-full">Save</div></button> : <button type="submit" className="w-1/4 grid justify-center"><div className="bg-pinktertiary w-fit py-1 px-3 hover:bg-pinksecondary duration-700 rounded-full">Save</div></button> }
+                                   
                             </ModalHeader>
                         
                         <ModalBody className='flex flex-col gap-2 bg-darkprimary'>
