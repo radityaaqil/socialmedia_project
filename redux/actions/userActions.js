@@ -16,17 +16,23 @@ export const loginAction = ({ ...values}) => {
    
       Cookies.set("token", res.headers["x-token-access"]);
 
-      await Swal.fire(
-      'Successfully logged in!',
-      'Welcome back!',
-      'success'
-      )
+      await Swal.fire({
+        title:'Successfully logged in!',
+        text:'Welcome back!',
+        icon:'success',
+        color: ' #4FBF26',
+        iconColor: ' #4FBF26',
+        background: '#1a1a1d',
+      });
     
     } catch (error) {
       dispatch({ type: "ERROR", payload: error.response.data.message || "Network Error" });
       await Swal.fire({
         icon: 'error',
         title: 'Oops...',
+        color: '#f44336',
+        iconColor: '#f44336',
+        background: '#1a1a1d',
         text: (error.response.data.message || "Network Error"),
       })
     } finally {
@@ -48,18 +54,24 @@ export const registerAction = ({ ...values }) => {
       dispatch({ type: "LOGIN", payload: res1.data });
 
       Cookies.set("token", res1.headers["x-token-access"]);
-
-      Swal.fire(
-        'Successfully registered!',
-        'Welcome aboard!',
-        'success'
-        )
+      
+      await Swal.fire({
+        title:'Successfully registered!',
+        text:'Welcome aboard!',
+        icon:'success',
+        color: ' #4FBF26',
+        iconColor: ' #4FBF26',
+        background: '#1a1a1d',
+      });
 
     } catch (error) {
       dispatch({ type: "ERROR", payload: error.response.data.message || "Network Error" });
       Swal.fire({
         icon: 'error',
         title: 'Oops...',
+        color: '#f44336',
+        iconColor: '#f44336',
+        background: '#1a1a1d',
         text: (error.response.data.message || "Network Error"),
     })
 
@@ -85,17 +97,23 @@ export const editProfile = ({ ...values }) => {
 
       dispatch({ type: "LOGIN", payload: res2.data });
 
-      Swal.fire(
-      'Profile successfully changed!',
-      'Yay!',
-      'success'
-      )
+      await Swal.fire({
+        title:'Profile successfully changed!',
+        text:'YAY!',
+        icon:'success',
+        color: ' #4FBF26',
+        iconColor: ' #4FBF26',
+        background: '#1a1a1d',
+      });
 
     } catch (error) {
       dispatch({ type: "ERROR", payload: error.response.data.message || "Network Error" });
       Swal.fire({
         icon: 'error',
         title: 'Oops...',
+        color: '#f44336',
+        iconColor: '#f44336',
+        background: '#1a1a1d',
         text: (error.response.data.message || "Network Error"),
       })
 
@@ -105,75 +123,75 @@ export const editProfile = ({ ...values }) => {
   };
 };
 
-export const editProfilePhoto = (values) => {
+// export const editProfilePhoto = (values) => {
 
-  return async (dispatch) => {
-    try {
-      dispatch({ type: "LOADING" });
-      let token = Cookies.get("token")
+//   return async (dispatch) => {
+//     try {
+//       dispatch({ type: "LOADING" });
+//       let token = Cookies.get("token")
   
-      let res2 = await axios.patch(`${API_URL}/photos/`, values,
-      {headers: {
-          authorization: `Bearer ${token}`,
-      }},)
+//       let res2 = await axios.patch(`${API_URL}/photos/`, values,
+//       {headers: {
+//           authorization: `Bearer ${token}`,
+//       }},)
 
-      dispatch({ type: "LOGIN", payload: res2.data });
+//       dispatch({ type: "LOGIN", payload: res2.data });
 
-      Swal.fire(
-      'Profile successfully changed!',
-      'Yay!',
-      'success'
-      )
+//       Swal.fire(
+//       'Profile successfully changed!',
+//       'Yay!',
+//       'success'
+//       )
 
-    } catch (error) {
-      dispatch({ type: "ERROR", payload: error.response.data.message || "Network Error" });
-      Swal.fire({
-        icon: 'error',
-        title: 'Oops...',
-        text: (error.response.data.message || "Network Error"),
-      })
+//     } catch (error) {
+//       dispatch({ type: "ERROR", payload: error.response.data.message || "Network Error" });
+//       Swal.fire({
+//         icon: 'error',
+//         title: 'Oops...',
+//         text: (error.response.data.message || "Network Error"),
+//       })
 
-    } finally {
-      dispatch({ type: "DONE" });
-    }
-  };
-};
+//     } finally {
+//       dispatch({ type: "DONE" });
+//     }
+//   };
+// };
 
-export const editCoverPhoto = (values) => {
+// export const editCoverPhoto = (values) => {
 
-  return async (dispatch) => {
-    try {
-      dispatch({ type: "LOADING" });
-      let token = Cookies.get("token")
+//   return async (dispatch) => {
+//     try {
+//       dispatch({ type: "LOADING" });
+//       let token = Cookies.get("token")
   
-      let res2 = await axios.patch(`${API_URL}/photos/coverphotos`, values,
-      {headers: {
-          authorization: `Bearer ${token}`,
-      }},)
+//       let res2 = await axios.patch(`${API_URL}/photos/coverphotos`, values,
+//       {headers: {
+//           authorization: `Bearer ${token}`,
+//       }},)
 
-      dispatch({ type: "LOGIN", payload: res2.data });
+//       dispatch({ type: "LOGIN", payload: res2.data });
 
-      console.log(res2.data)
+//       console.log(res2.data)
 
-      Swal.fire(
-      'Profile successfully changed!',
-      'Yay!',
-      'success'
-      )
+//       Swal.fire(
+//       'Profile successfully changed!',
+//       'Yay!',
+//       'success'
+//       )
 
-    } catch (error) {
-      dispatch({ type: "ERROR", payload: error.response.data.message || "Network Error" });
-      Swal.fire({
-        icon: 'error',
-        title: 'Oops...',
-        text: (error.response.data.message || "Network Error"),
-      })
+//     } catch (error) {
+//       dispatch({ type: "ERROR", payload: error.response.data.message || "Network Error" });
+//       Swal.fire({
+//         icon: 'error',
+//         title: 'Oops...',
+//         text: (error.response.data.message || "Network Error"),
+//       })
 
-    } finally {
-      dispatch({ type: "DONE" });
-    }
-  };
-};
+//     } finally {
+//       dispatch({ type: "DONE" });
+//     }
+//   };
+// };
 
 export const editAllPhotos = ({ formData, formDataCover }) => {
 
@@ -205,17 +223,23 @@ export const editAllPhotos = ({ formData, formDataCover }) => {
       // dispatch({ type: "LOGIN", payload: res2[0].data});
       // dispatch({ type: "LOGIN", payload: res2[1].data});
 
-      Swal.fire(
-      'Profile successfully changed!',
-      'Yay!',
-      'success'
-      )
+      await Swal.fire({
+        title:'Photos successfully changed!',
+        text:'YAY!',
+        icon:'success',
+        color: ' #4FBF26',
+        iconColor: ' #4FBF26',
+        background: '#1a1a1d',
+      });
 
     } catch (error) {
       dispatch({ type: "ERROR", payload: error.response.data.message || "Network Error" });
       Swal.fire({
         icon: 'error',
         title: 'Oops...',
+        color: '#f44336',
+        iconColor: '#f44336',
+        background: '#1a1a1d',
         text: (error.response.data.message || "Network Error"),
       })
 

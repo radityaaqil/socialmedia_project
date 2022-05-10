@@ -56,17 +56,25 @@ const ResetPassword = () => {
                       authorization: `Bearer ${token}`,
                     },
                 });
-                await Swal.fire(
-                    'Password successfully changed!',
-                    "Let's get you back in!",
-                    'success'
-                    )
+
+                await Swal.fire({
+                    title:'Password successfully changed!',
+                    text:"Let's get you back in!",
+                    icon:'success',
+                    color: ' #4FBF26',
+                    iconColor: ' #4FBF26',
+                    background: '#1a1a1d',
+                })
+
                 router.push('/login')
             } catch (error) {
                 console.log(error)
                 await Swal.fire({
                     icon: 'error',
                     title: 'Oops...',
+                    color: '#f44336',
+                    iconColor: '#f44336',
+                    background: '#1a1a1d',
                     text: (error.response.data.message || "Network Error"),
                   }) 
             }     

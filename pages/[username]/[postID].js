@@ -82,26 +82,33 @@ const Post = () => {
             title: 'Delete post?',
             text: "You won't be able to revert this!",
             icon: 'warning',
+            color:'#ffffff',
+            iconColor:'#d33',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
             cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes, delete it!'
+            confirmButtonText: 'Yes, delete it!',
+            background: '#1a1a1d',
           }).then((result) => {
             if (result.isConfirmed) {
                 let token = Cookies.get("token");
                 axios.delete(`${API_URL}/post/deletepost/${postID}`, {headers: {
                     authorization: `Bearer ${token}`,
                 }});
-              Swal.fire(
-                'Deleted!',
-                'Your post has been deleted.',
-                'success'
-              )
+              Swal.fire({
+                title:'Deleted!',
+                text:'Your post has been deleted.',
+                icon:'success',
+                color: ' #4FBF26',
+                iconColor: ' #4FBF26',
+                background: '#1a1a1d',
+                })
+                router.push("/home")
             }
-          }).then(()=>{
-            router.push("/home")
-            console.log('udah diapus sob')
           })
+        //   }).then(()=>{
+        //     console.log('udah diapus sob')
+        //   })
     }
 
     const addLikes = async () => {

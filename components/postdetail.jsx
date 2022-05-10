@@ -103,11 +103,13 @@ const Postdetail = ({data, fetchDataUserDetail, setData, username, isVerified, p
 
             insertComment(insertinputComment);
 
-            await Swal.fire(
-                'Reply sent!',
-                '',
-                'success'
-            )
+            await Swal.fire({
+                title:'Reply sent!',
+                icon:'success',
+                color: ' #4FBF26',
+                iconColor: ' #4FBF26',
+                background: '#1a1a1d',
+            })
                 
             setinputComment({...input, comment:""});
         } catch (error) {
@@ -115,6 +117,9 @@ const Postdetail = ({data, fetchDataUserDetail, setData, username, isVerified, p
             await Swal.fire({
                 icon: 'error',
                 title: 'Oops...',
+                color: '#f44336',
+                iconColor: '#f44336',
+                background: '#1a1a1d',
                 text: (error || "Network Error" ),
             });
         };   
@@ -152,11 +157,14 @@ const Postdetail = ({data, fetchDataUserDetail, setData, username, isVerified, p
             await updatePost(formData)
             // await fetchDataUserDetail()
             
-            await Swal.fire(
-                'Post successfully changed!',
-                '',
-                'success'
-                )
+
+            await Swal.fire({
+                title:'Post successfully changed!',
+                icon:'success',
+                color: ' #4FBF26',
+                iconColor: ' #4FBF26',
+                background: '#1a1a1d',
+            });
                 
             setInput({...input, caption:""})
            
@@ -166,17 +174,15 @@ const Postdetail = ({data, fetchDataUserDetail, setData, username, isVerified, p
             await Swal.fire({
             icon: 'error',
             title: 'Oops...',
+            color: '#f44336',
+            iconColor: '#f44336',
+            background: '#1a1a1d',
             text: (error.response.data.message || "Network Error"),
             })
         }
         console.log(formData)
     }
     
-    // useEffect(() => {
-    //     fetchDataUserDetail()
-    //     renderData()
-    // }, []);
-
     const [commentsCounts, setCommentsCounts] = useState(5);
 
     const more = () => {

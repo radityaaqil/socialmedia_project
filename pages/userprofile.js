@@ -204,16 +204,22 @@ const Userprofile = () => {
               authorization: `Bearer ${token}`,
             },
           });
-          await Swal.fire(
-            'Email sent!',
-            'Please check your email',
-            'success'
-            )
+          await Swal.fire({
+            title:'Email sent!',
+            text:'Please check your email',
+            icon:'success',
+            color: ' #4FBF26',
+            iconColor: ' #4FBF26',
+            background: '#1a1a1d',
+        });
         } catch (error) {
           console.log(error);
           await Swal.fire({
             icon: 'error',
             title: 'Oops...',
+            color: '#f44336',
+            iconColor: '#f44336',
+            background: '#1a1a1d',
             text: (error.response.data.message || "Network Error"),
           })
         } finally {

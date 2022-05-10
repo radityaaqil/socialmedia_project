@@ -80,11 +80,6 @@ const Feed = ({profile_picture, postEverywhere, data, hasMore, fetchDataOnScroll
 
             setInput({...input, caption:""})
 
-            // await Swal.fire(
-            // 'Post sent!',
-            // '',
-            // 'success'
-            // )
             console.log(formData)
             
         } catch (error) {
@@ -100,31 +95,6 @@ const Feed = ({profile_picture, postEverywhere, data, hasMore, fetchDataOnScroll
         console.log(formData)
     };  
     
-    // const [data, setState] = useState([])
-    // const [hasMore, setHasMore] = useState(true);
-    // const [page, setPage] = useState(0);
-    // const limit = 10;
-
-    // const fetchDataOnScroll = async () => {
-    //     try {
-    //       const res = await axios.get(`${API_URL}/post/getpost`, {
-    //         params: { page, limit },
-    //       });
-    
-    //       if (res.data.length === 0) setHasMore(false);
-    //       setState((prev) => [...prev, ...res.data]);
-    //       setPage((prev) => prev + 1);
-    //     } catch (error) {
-    //       console.log("Error fetching Posts");
-    //       console.log(error);
-    //     }
-    //   };
-
-    // useEffect(() => {
-    //     fetchDataOnScroll();
-    // }, []);
-    
-
     const renderData = () => {
         return data.map((val, index) => {
             return(

@@ -44,11 +44,37 @@ const LeftNavBar = ({username, fullname, profile_picture, postEverywhere, isVeri
 
     const router = useRouter()
 
-    const signOut = async () => {
-        Cookies.remove("token");
-        await router.push('/')
-        await dispatch({ type : "LOGOUT" })
-    }
+    const signOut = () => {
+        Swal.fire({
+            title: 'Sign out',
+            text: "Do you want to sign out from your account?",
+            icon: 'warning',
+            iconColor:'#d33',
+            color:'#ffffff',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: "Yes, I have had enough!",
+            background: '#1a1a1d',
+          }).then((result) => {
+            if (result.isConfirmed) {
+                Cookies.remove("token")
+                    Swal.fire({
+                        title:'Signed out!',
+                        text:'Good bye!',
+                        icon:'success',
+                        color: ' #4FBF26',
+                        iconColor: ' #4FBF26',
+                        background: '#1a1a1d',
+                        })
+                .then(()=>{
+                    router.push("/")
+                }).then(()=>{
+                    dispatch({ type : "LOGOUT" })
+                });
+            }
+          })
+    };
 
     const [selectedImage, setselectedImage] = useState([]);
 
@@ -81,15 +107,19 @@ const LeftNavBar = ({username, fullname, profile_picture, postEverywhere, isVeri
  
         try {
        
-            await postEverywhere(formData)
+            // await postEverywhere(formData)
 
-            setInput({...input, caption:""})
+            // setInput({...input, caption:""})
 
-            await Swal.fire(
-                'Post sent!',
-                '',
-                'success'
-                )
+            await Swal.fire({
+                title:'Post sent!',
+                icon:'success',
+                color: ' #4FBF26',
+                iconColor: ' #4FBF26',
+                background: '#1a1a1d',
+            })
+                
+                
                 
             console.log(formData)
             
@@ -97,6 +127,9 @@ const LeftNavBar = ({username, fullname, profile_picture, postEverywhere, isVeri
             await Swal.fire({
             icon: 'error',
             title: 'Oops...',
+            color: '#f44336',
+            iconColor: '#f44336',
+            background: '#1a1a1d',
             text: (error.response.data.message || "Network Error"),
             })
         }

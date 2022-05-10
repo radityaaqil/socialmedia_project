@@ -34,12 +34,8 @@ export default function Landing() {
                 <span className='bg-clip-text text-transparent bg-gradient-to-r from-blue-500 via-green-500 to-blue-500 animate-move-bg bg-[length:400%]'>INTERACT.</span></div>
             </div>
           </Heading>
-        </div>
-
-       
-
-    
+        </div>   
   )
-}
+};
 
 
