@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import Cookies from "js-cookie"
 import API_URL from "../helpers/apiurl";
 import axios from "axios";
+import Swal from "sweetalert2";
 
 const Userprofile = () => {
 
@@ -203,8 +204,18 @@ const Userprofile = () => {
               authorization: `Bearer ${token}`,
             },
           });
+          await Swal.fire(
+            'Email sent!',
+            'Please check your email',
+            'success'
+            )
         } catch (error) {
           console.log(error);
+          await Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: (error.response.data.message || "Network Error"),
+          })
         } finally {
           
         }

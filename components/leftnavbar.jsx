@@ -46,8 +46,8 @@ const LeftNavBar = ({username, fullname, profile_picture, postEverywhere, isVeri
 
     const signOut = async () => {
         Cookies.remove("token");
-        dispatch({ type : "LOGOUT" })
         await router.push('/')
+        await dispatch({ type : "LOGOUT" })
     }
 
     const [selectedImage, setselectedImage] = useState([]);
