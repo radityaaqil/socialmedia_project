@@ -25,14 +25,14 @@ const Post = () => {
 
     const fetchDataUserDetail = async () => {
         try {
-        let token = Cookies.get("token")
-        let res = await axios.get(`${API_URL}/post/getuserpostdetail/${postID}`, {headers: {
-            authorization: `Bearer ${token}`,
-        }});
-        setData(res.data);
-        console.log(res.data)
+            let token = Cookies.get("token")
+            let res = await axios.get(`${API_URL}/post/getuserpostdetail/${postID}`, {headers: {
+                authorization: `Bearer ${token}`,
+            }});
+            setData(res.data);
+            console.log(res.data)
         } catch (error) {
-        console.log(error);
+            console.log(error);
         }
     };
 

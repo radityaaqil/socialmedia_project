@@ -245,7 +245,7 @@ const Feed = ({profile_picture, postEverywhere, data, hasMore, fetchDataOnScroll
                         <div className='border-b-2 border-darksecondary flex pb-4 pl-6 pt-4 hover:bg-darksecondary hover:cursor-pointer duration-700 bg-pinktertiary'>
                             <div className=''></div>
                                 <div className='text-white flex flex-col pl-16 w-11/12'>
-                                    <div className='pt-2 text-lg'>You need to verify your account first! Click here!</div>
+                                    <div className='pt-2 text-lg text-center'>You need to verify your account first! Check your email or click here!</div>
                                     <div className='pt-2 text-lg pr-6'></div>
                                 </div>
                         </div>

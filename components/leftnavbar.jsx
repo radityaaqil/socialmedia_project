@@ -180,7 +180,7 @@ const LeftNavBar = ({username, fullname, profile_picture, postEverywhere, isVeri
                             {profile_picture ? <img src={`${API_URL}${profile_picture}`} alt="" className="object-cover w-14 h-14 rounded-full" /> : <img src={`${API_URL}/photos/defaultcoverimage.png`} alt="" className="object-cover w-14 h-14 rounded-full" />}
                         </a>
                         <div className='flex flex-col text-base'>
-                            <div className='font-bold'>{fullname}</div>
+                            <div className='font-bold'>{fullname ? fullname : `Your fullname`}</div>
                             <div className='text-sm'>@{username}</div>
                         </div>
                         <button className='text-base p-2'><FiMoreHorizontal/></button>

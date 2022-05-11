@@ -67,8 +67,8 @@ const Profile = ({isVerified, editProfile, editAllPhotos, username, fullname, bi
 
         onSubmit : async (values) => {
             try {
-                await editProfile(values)
                 onClose()
+                await editProfile(values)
                 
             } catch (error) {
                 console.log(error)
@@ -164,10 +164,10 @@ const Profile = ({isVerified, editProfile, editAllPhotos, username, fullname, bi
                 onClosePhoto()
                 throw "Please select cover picture!"
             }else{
+                onClosePhoto()
                 await editAllPhotos({formData, formDataCover});
                 setselectedCoverImage({...selectedCoverImage, file:[]})
                 setselectedImage({...selectedImage, file:[]})
-                onClosePhoto()
             }
 
             // await editProfilePhoto(formData);
@@ -177,13 +177,13 @@ const Profile = ({isVerified, editProfile, editAllPhotos, username, fullname, bi
             // onClosePhoto()
             
 
-            await Swal.fire({
-                title:'Pictures changed successfully!',
-                icon:'success',
-                color: ' #4FBF26',
-                iconColor: ' #4FBF26',
-                background: '#1a1a1d',
-            })
+            // await Swal.fire({
+            //     title:'Pictures changed successfully!',
+            //     icon:'success',
+            //     color: ' #4FBF26',
+            //     iconColor: ' #4FBF26',
+            //     background: '#1a1a1d',
+            // })
 
         } catch (error) {
             console.log(error)

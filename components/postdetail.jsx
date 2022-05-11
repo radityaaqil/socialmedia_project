@@ -237,7 +237,7 @@ const Postdetail = ({data, fetchDataUserDetail, setData, username, isVerified, p
                         <div className='pt-4 flex justify-between items-center h-4'>
                             {(username == val.username) ? <button onClick={mapInitialState} className='text-lg hover:scale-150 duration-700'><AiFillEdit/></button> : null}
                             
-                            {val.alreadyliked ? <button onClick={(e)=>handleClick(e)} className='text-lg text-red-500 hover:scale-150 duration-700 flex items-center gap-2'>{val.likes ? <span>{val.likes}</span> : null}<AiFillHeart/></button> : <button onClick={(e)=>handleClick(e)} className='text-lg hover:scale-150 duration-700 flex items-center gap-2'>{val.likes ? <span>{val.likes}</span> : null}<AiOutlineHeart/></button>}
+                            {val.alreadyliked ? <button onClick={addLikes} className='text-lg text-red-500 hover:scale-150 duration-700 flex items-center gap-2'>{val.likes ? <span>{val.likes}</span> : null}<AiFillHeart/></button> : <button onClick={addLikes} className='text-lg hover:scale-150 duration-700 flex items-center gap-2'>{val.likes ? <span>{val.likes}</span> : null}<AiOutlineHeart/></button>}
                             
                             <button className='text-lg hover:scale-150 duration-700'><FiShare/></button>
                             {(username == val.username) ? <button onClick={(e) => handleDeletePost(e)} className='text-lg hover:scale-150 hover:text-red-500 duration-700'><IoClose/></button> : null}

@@ -6,13 +6,16 @@ import * as Yup from "yup";
 import { BsEyeFill, BsEyeSlashFill } from "react-icons/bs";
 import { useRouter } from "next/router";
 import { registerAction } from "../redux/actions/userActions";
-import { connect, useSelector } from "react-redux";
+import { connect } from "react-redux";
+import useUser from '../hooks/useUser';
 
 const Register = ({ registerAction }) => {
 
     const router = useRouter()
 
-    const { isLogin } = useSelector((state) => state.user);
+    // const { isLogin } = useSelector((state) => state.user);
+
+    const { isLogin } = useUser()
 
     const [show, setShow] = useState(false)
     const handleClick = () => setShow(!show)
@@ -53,7 +56,7 @@ const Register = ({ registerAction }) => {
     })
 
     if(isLogin){
-        router.replace("/userprofile")
+        router.push("/home")
     }
 
     console.log(formik.values)
